@@ -15,23 +15,15 @@ choices = (
 
 
 class Step(TimeStampModel):
-    title = models.CharField(
-        verbose_name='Step title',
-        max_length=255,
-    )
-    quest = models.ForeignKey(
-        to='Quest',
-        related_name='steps',
-        blank=True,
-        null=True,
-    )
+    title = models.CharField(verbose_name='Step title', max_length=255)
+    number = models.PositiveIntegerField(verbose_name="Step Number")
+    quest = models.ForeignKey(to='Quest',related_name='steps')
     status = models.CharField(
         verbose_name="Status of step",
         choices=choices,
         default=NOT_STARTED,
         max_length=255,
     )
-    number = models.PositiveIntegerField(verbose_name="Step Number")
 
     def __str__(self):
         return f'{self.title} - {self.number}'

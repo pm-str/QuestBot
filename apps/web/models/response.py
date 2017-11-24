@@ -4,9 +4,10 @@ from .abstract import TimeStampModel
 
 
 class Response(TimeStampModel):
-    title = models.CharField(
-        verbose_name='Response title',
-        max_length=1000,
+    title = models.CharField(verbose_name='Response title', max_length=1000)
+    on_true = models.BooleanField(
+        verbose_name='Triggering on true',
+        default=True,
     )
     message = models.CharField(
         verbose_name='Response message',
@@ -19,10 +20,15 @@ class Response(TimeStampModel):
         null=True,
         blank=True,
     )
-    redirect_to = models.ForeignKey(
+    requests = models.ForeignKey(
+        verbose_name='Attached request to',
+        to='Request',
+        related_name='responses',
+    )
+    redirect_to = models.ManyToManyField(
+        verbose_name='Redirect to users',
         to='AppUser',
         related_name='redirected_responses',
-        null=True,
         blank=True,
     )
 

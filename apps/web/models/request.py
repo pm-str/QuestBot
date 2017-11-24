@@ -3,10 +3,11 @@ from .abstract import TimeStampModel
 
 
 class Request(TimeStampModel):
-    steps = models.ManyToManyField(
-        to='Step',
-        related_name='requests',
-        blank=True,
+    steps = models.ForeignKey(to='Step', related_name='requests')
+    ids_expression = models.CharField(
+        max_length=500,
+        verbose_name="Mathematics expression from ids. Allowed '+*()!'",
+        default='{}'
     )
     allowed = models.ManyToManyField(
         to='AppUser',

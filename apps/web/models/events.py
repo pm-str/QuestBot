@@ -13,6 +13,7 @@ class Event(TimeStampModel):
         blank=True,
     )
     users = models.ManyToManyField(
+        verbose_name='Users to send to',
         to='AppUser',
         related_name='events',
         blank=True,
