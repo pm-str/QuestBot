@@ -21,8 +21,8 @@ class Response(TimeStampModel):
         blank=True,
     )
     requests = models.ForeignKey(
-        verbose_name='Attached request to',
-        to='Request',
+        verbose_name='Attached handler to',
+        to='Handler',
         related_name='responses',
     )
     redirect_to = models.ManyToManyField(

@@ -3,7 +3,6 @@ from django.utils.translation import ugettext_lazy as _
 
 from .abstract import TimeStampModel
 
-
 FULL_COINCIDENCE = 'full_coincidence'
 TO_BE_IN = 'to_be_in'
 STARTS_WITH = 'starts_with'
@@ -37,11 +36,15 @@ class Condition(TimeStampModel):
         choices=CHOICES,
         default=FULL_COINCIDENCE,
     )
-    request = models.ForeignKey(
-        to='Request',
-        verbose_name='Attached to requests',
+    handler = models.ForeignKey(
+        to='Handler',
+        verbose_name='Attached to handler',
         related_name='conditions',
-        default='FULL_COINCIDENCE',
+    )
+    pattern = models.CharField(
+        max_length=500,
+        verbose_name='Regex pattern',
+        help_text='Helps to determine the truth for some rules'
     )
 
     def __str__(self):

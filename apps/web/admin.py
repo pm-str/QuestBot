@@ -1,5 +1,7 @@
-from django.contrib import admin
 from ckeditor.widgets import CKEditorWidget
+from django.contrib import admin
+from django.db import models
+
 from apps.web.models import *
 
 
@@ -7,8 +9,8 @@ class StepInline(admin.TabularInline):
     model = Step
 
 
-class RequestInline(admin.TabularInline):
-    model = Request
+class HandlerInline(admin.TabularInline):
+    model = Handler
     exclude = ('allowed',)
     readonly_fields = ('id', )
     fields = ('id', 'ids_expression', 'title', 'slug',)
@@ -18,6 +20,16 @@ class ConditionInline(admin.TabularInline):
     model = Condition
     readonly_fields = ('id', )
     fields = ('id', 'value', 'rule',)
+
+
+@admin.register(Bot)
+class BotAdmin(admin.ModelAdmin):
+    pass
+
+
+@admin.register(Message)
+class MessageAdmin(admin.ModelAdmin):
+    pass
 
 
 @admin.register(Event)
@@ -46,16 +58,16 @@ class ConditionAdmin(admin.ModelAdmin):
                 'modified',
             ),
         }),
-        ('Request', {
+        ('Handler', {
             'fields': (
-                'request',
+                'handler',
             )
         }),
     )
 
 
-@admin.register(Request)
-class RequestAdmin(admin.ModelAdmin):
+@admin.register(Handler)
+class HandlerAdmin(admin.ModelAdmin):
     inlines = (ConditionInline,)
 
 
@@ -66,7 +78,7 @@ class ResponseAdmin(admin.ModelAdmin):
 
 @admin.register(Step)
 class StepAdmin(admin.ModelAdmin):
-    inlines = (RequestInline,)
+    inlines = (HandlerInline,)
 
 
 @admin.register(AppUser)
