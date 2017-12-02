@@ -23,6 +23,22 @@ class Update(TimeStampModel):
         null=True,
         blank=True,
     )
+    handler = models.ForeignKey(
+        to='Handler',
+        related_name='updates',
+        verbose_name='Handler',
+        help_text=_('Handler contains expression needed to process a message'),
+        blank=True,
+        null=True,
+    )
+    response = models.ForeignKey(
+        to='Response',
+        related_name='updates',
+        verbose_name='Response',
+        help_text=_('Response that contain this message'),
+        blank=True,
+        null=True,
+    )
 
     class Meta:
         verbose_name = _('Update')

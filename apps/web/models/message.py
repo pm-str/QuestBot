@@ -29,22 +29,6 @@ class Message(TimeStampModel):
         verbose_name='From User',
         help_text=_('Retrieved user from'),
     )
-    handler = models.ForeignKey(
-        to='Handler',
-        related_name='messages',
-        verbose_name='Handler',
-        help_text=_('Handler contains expression needed to process a message'),
-        blank=True,
-        null=True,
-    )
-    response = models.ForeignKey(
-        to='Response',
-        related_name='messages',
-        verbose_name='Response',
-        help_text=_('Response that contain this message'),
-        blank=True,
-        null=True,
-    )
     chat = models.ForeignKey(
         to='Chat',
         related_name='messages',

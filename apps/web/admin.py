@@ -31,13 +31,13 @@ class BotAdmin(admin.ModelAdmin):
 @admin.register(Message)
 class MessageAdmin(admin.ModelAdmin):
     list_display = ('message_id', 'from_user', 'date',)
-    list_filter = ('from_user', 'chat', 'handler', 'response',)
+    list_filter = ('from_user', 'chat',)
 
 
 @admin.register(Update)
 class UpdateAdmin(admin.ModelAdmin):
     list_filter = ('bot',)
-    list_display = ('update_id', 'message',)
+    list_display = ('update_id', 'message', 'handler', 'response',)
 
 
 @admin.register(Chat)
