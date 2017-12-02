@@ -15,20 +15,21 @@ from .signals import update_webhook_signal
 logger = logging.getLogger(__name__)
 
 
+@receiver(pre_save, sender=Site)
 @receiver(config_updated)
-def dispatcher(sender, key, old_value, new_value, **kwargs):
+def dispatcher(sender, instance, *args, **kwargs):
     """Retrieve ``config_updated`` signal from constance
 
     Check if it was url updating, it should be webhook configured again.
 
     """
-    if key in ['WEBHOOKS_API_VIEW_URL']:
-        objects = Bot.objects.all()
 
-        for bot in objects:
-            update_webhook_signal.send(sender=Bot, instance=bot)
+    objects = Bot.objects.all()
 
-        logging.debug("Constance's settings have been updated")
+    for bot in objects:
+        update_webhook_signal.send(sender=Bot, instance=bot)
+
+    logging.debug("Constance's settings have been updated")
 
 
 @receiver(pre_save, sender=Bot)
@@ -57,8 +58,8 @@ def setup_hooks(sender, instance, *args, **kwargs):
         api_url = reverse(getattr(config, settings.WEBHOOKS_APIVIEW_URL),
                           kwargs={'hook_id': instance.hook_id})
         url = 'https://{site_url}/{api_url}/'.format(
-            site_url=site_url,
-            api_url=api_url,
+            site_url=site_url.strip('/'),
+            api_url=api_url.strip('/'),
         )
 
     instance.set_webhook(url)

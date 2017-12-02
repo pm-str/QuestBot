@@ -13,5 +13,5 @@ class ProcessWebHookAPIView(APIView):
             request.data,
             hook_id,
         ))
-
+        print(request.data, hook_id)
         return Response(status=status.HTTP_201_CREATED)

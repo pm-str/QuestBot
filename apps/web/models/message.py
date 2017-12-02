@@ -11,7 +11,18 @@ class Message(TimeStampModel):
         verbose_name='Message id',
         db_index=True,
         help_text='Telegram message id retrieved from API'
-     )
+    )
+    date = models.DateTimeField(
+        verbose_name=_('Date'),
+        help_text='Date the message was sent',
+    )
+    forward_from = models.ForeignKey(
+        to='AppUser',
+        null=True,
+        blank=True,
+        related_name='forwarded_messages',
+        verbose_name=_('Sender of the original message')
+    )
     from_user = models.ForeignKey(
         to=settings.AUTH_USER_MODEL,
         related_name='messages',
@@ -26,9 +37,19 @@ class Message(TimeStampModel):
         blank=True,
         null=True,
     )
-    chat = models.BigIntegerField(
+    response = models.ForeignKey(
+        to='Response',
+        related_name='messages',
+        verbose_name='Response',
+        help_text=_('Response that contain this message'),
+        blank=True,
+        null=True,
+    )
+    chat = models.ForeignKey(
+        to='Chat',
+        related_name='messages',
         verbose_name='Chat id',
-        help_text='Retrieved from Telegram API chat id'
+        help_text='Retrieved from Telegram API chat id',
     )
     text = models.CharField(max_length=2500, verbose_name='Message text')
 

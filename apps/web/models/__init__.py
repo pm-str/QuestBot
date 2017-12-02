@@ -7,3 +7,6 @@ from .user import AppUser
 from .condition import Condition
 from .message import Message
 from .bot import Bot
+from .chat import Chat
+from .update import Update
+from .callback_query import CallbackQuery

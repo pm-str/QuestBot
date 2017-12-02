@@ -15,6 +15,11 @@ class AppUser(AbstractUser):
         verbose_name="User's level",
         blank=True,
     )
+    language_code = models.CharField(
+        max_length=10,
+        verbose_name='Language code',
+        help_text='Language code from user messages got for the first time'
+    )
 
     def __str__(self):
         return self.username

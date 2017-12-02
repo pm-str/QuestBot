@@ -18,18 +18,36 @@ class HandlerInline(admin.TabularInline):
 
 class ConditionInline(admin.TabularInline):
     model = Condition
-    readonly_fields = ('id', )
+    readonly_fields = ('id',)
     fields = ('id', 'value', 'rule',)
 
 
 @admin.register(Bot)
 class BotAdmin(admin.ModelAdmin):
-    pass
+    list_display = ('name', 'enabled', 'token',)
+    list_filter = ('enabled', 'owner',)
 
 
 @admin.register(Message)
 class MessageAdmin(admin.ModelAdmin):
-    pass
+    list_display = ('message_id', 'from_user', 'date',)
+    list_filter = ('from_user', 'chat', 'handler', 'response',)
+
+
+@admin.register(Update)
+class UpdateAdmin(admin.ModelAdmin):
+    list_filter = ('bot',)
+    list_display = ('update_id', 'message',)
+
+
+@admin.register(Chat)
+class ChatAdmin(admin.ModelAdmin):
+    list_display = ('id', 'type', 'title',)
+
+
+@admin.register(CallbackQuery)
+class CallbackQueryAdmin(admin.ModelAdmin):
+    list_display = ('id', 'from_user', 'data',)
 
 
 @admin.register(Event)

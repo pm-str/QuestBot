@@ -8,8 +8,8 @@ class Handler(TimeStampModel):
     steps = models.ForeignKey(to='Step', related_name='handlers')
     ids_expression = models.CharField(
         max_length=500,
-        verbose_name="Mathematics expression from ids. Allowed '+*()!'",
-        help_text=_('Validate a set of rules by condition id'),
+        verbose_name='Mathematics expression',
+        help_text=_("Allowed / +*()! /. A set of rules by condition's id"),
         default='{}'
     )
     allowed = models.ManyToManyField(
@@ -22,6 +22,18 @@ class Handler(TimeStampModel):
         max_length=255,
         blank=True,
         null=True,
+    )
+    step_on_success = models.SmallIntegerField(
+        verbose_name='Step on success',
+        help_text='Move to this step if mathematics expression truthful',
+        null=True,
+        blank=True,
+    )
+    step_on_error = models.SmallIntegerField(
+        verbose_name='Step on error',
+        help_text='Move to this step if mathematics expression wrongful',
+        null=True,
+        blank=True,
     )
     title = models.CharField(verbose_name="Handler title", max_length=255)
 
