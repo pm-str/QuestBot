@@ -14,6 +14,7 @@ class HandlerInline(admin.TabularInline):
     exclude = ('allowed',)
     readonly_fields = ('id', )
     fields = ('id', 'ids_expression', 'title', 'slug',)
+    fk_name = 'step'
 
 
 class ConditionInline(admin.TabularInline):

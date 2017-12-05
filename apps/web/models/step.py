@@ -17,7 +17,7 @@ choices = (
 class Step(TimeStampModel):
     title = models.CharField(verbose_name='Step title', max_length=255)
     number = models.PositiveIntegerField(verbose_name="Step Number")
-    quest = models.ForeignKey(to='Quest',related_name='steps')
+    quest = models.ForeignKey(to='Quest', related_name='steps')
     status = models.CharField(
         verbose_name="Status of step",
         choices=choices,

@@ -5,7 +5,11 @@ from .abstract import TimeStampModel
 
 
 class Handler(TimeStampModel):
-    steps = models.ForeignKey(to='Step', related_name='handlers')
+    step = models.ForeignKey(
+        to='Step',
+        help_text=_('Handle particular actions for this step'),
+        related_name='handlers',
+    )
     ids_expression = models.CharField(
         max_length=500,
         verbose_name='Mathematics expression',
@@ -23,15 +27,19 @@ class Handler(TimeStampModel):
         blank=True,
         null=True,
     )
-    step_on_success = models.SmallIntegerField(
+    step_on_success = models.ForeignKey(
+        to='Step',
         verbose_name='Step on success',
         help_text='Move to this step if mathematics expression truthful',
+        related_name='true_handlers',
         null=True,
         blank=True,
     )
-    step_on_error = models.SmallIntegerField(
+    step_on_error = models.ForeignKey(
+        to='Step',
         verbose_name='Step on error',
         help_text='Move to this step if mathematics expression wrongful',
+        related_name='false_handlers',
         null=True,
         blank=True,
     )

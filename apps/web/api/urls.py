@@ -1,10 +1,13 @@
-from django.conf.urls import url
-from django.views.decorators.csrf import csrf_exempt
+from rest_framework.routers import SimpleRouter
 
 from .views import ProcessWebHookAPIView
 
-urlpatterns = [
-    url('webhook/(?P<hook_id>[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/',
-        csrf_exempt(ProcessWebHookAPIView.as_view()),
-        name='webhook-processing'),
-]
+router = SimpleRouter()
+
+router.register(
+    'webhook/(?P<hook_id>[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})',
+    ProcessWebHookAPIView,
+    'webhook-processing',
+)
+
+urlpatterns = router.urls

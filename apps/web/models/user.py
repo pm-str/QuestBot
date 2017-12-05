@@ -9,6 +9,7 @@ class AppUser(AbstractUser):
         verbose_name="Telegram user's id",
         max_length=255,
     )
+    is_bot = models.BooleanField(verbose_name='User is a bot', default=False)
     steps = models.ManyToManyField(
         to='Step',
         related_name='users',
