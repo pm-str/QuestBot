@@ -1,12 +1,11 @@
+import time
 from datetime import datetime
+
 from constance import config
 from django.conf import settings
-
-import time
-
 from rest_framework import serializers
 
-from apps.web.models import Update, Message, AppUser, Chat, CallbackQuery, Bot
+from apps.web.models import AppUser, Bot, CallbackQuery, Chat, Message, Update
 
 
 class TelegramBot(object):

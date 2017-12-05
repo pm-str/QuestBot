@@ -6,7 +6,7 @@ from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 
 from apps.web.api.serializers import UpdateModelSerializer
-from apps.web.models import Update, AppUser, Chat, Message, Bot, CallbackQuery
+from apps.web.models import AppUser, Bot, CallbackQuery, Chat, Message, Update
 
 logger = logging.getLogger(__name__)
 
