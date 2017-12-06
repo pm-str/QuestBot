@@ -11,6 +11,15 @@ class StepInline(admin.TabularInline):
 
 class PhotoSizeInline(admin.TabularInline):
     model = PhotoSize
+    readonly_fields = ('url',)
+    fields = ('url', 'height', 'width', 'file_size',)
+
+    def url(self, obj):
+        return obj.message.updates.first().bot.get_file(
+            obj.file_id)['file_path']
+
+    def has_add_permission(self, request):
+        return False
 
 
 class HandlerInline(admin.TabularInline):

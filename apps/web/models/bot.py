@@ -20,8 +20,19 @@ def validate_token(value):
         )
 
 
+class BotDescriptor(object):
+    def __get__(self, instance, owner):
+        if not instance._bot:
+            instance.init_bot()
+        return instance._bot
+
+    def __set__(self, instance, value):
+        instance._bot = value
+
+
 class Bot(TimeStampModel):
     _bot = None
+    bot = BotDescriptor()
     id = models.UUIDField(
         primary_key=True,
         default=uuid.uuid4,
@@ -84,7 +95,7 @@ class Bot(TimeStampModel):
 
     def get_file(self, file_id):
         """Download file by link"""
-        return self._bot.getFile(file_id)
+        return self.bot.getFile(file_id)
 
     def set_webhook(self, url):
         """Set webhook for Telegram bot"""
