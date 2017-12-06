@@ -6,6 +6,7 @@ from django.conf import settings
 from rest_framework import serializers
 
 from apps.web.models import AppUser, Bot, CallbackQuery, Chat, Message, Update
+from apps.web.models.message import PhotoSize
 
 
 class TelegramBot(object):
@@ -53,6 +54,14 @@ class TimeStampField(serializers.Field):
         return datetime.fromtimestamp(data)
 
 
+class PhotoSizeSerializer(serializers.ModelSerializer):
+    message = serializers.HiddenField(default=None, read_only=False)
+
+    class Meta:
+        model = PhotoSize
+        fields = '__all__'
+
+
 class MessageModelSerializer(serializers.ModelSerializer):
 
     def __init__(self, *args, **kwargs):
@@ -69,6 +78,10 @@ class MessageModelSerializer(serializers.ModelSerializer):
     )
     date = TimeStampField()
     chat = ChatModelSerializer()
+    photo = PhotoSizeSerializer(
+        many=True,
+        required=False,
+    )
 
     class Meta:
         model = Message
@@ -76,6 +89,7 @@ class MessageModelSerializer(serializers.ModelSerializer):
             'message_id',
             'date',
             'chat',
+            'photo',
             'from_user',
             'forward_from',
             'text',

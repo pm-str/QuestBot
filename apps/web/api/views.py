@@ -7,6 +7,7 @@ from rest_framework.viewsets import GenericViewSet
 
 from apps.web.api.serializers import UpdateModelSerializer
 from apps.web.models import AppUser, Bot, CallbackQuery, Chat, Message, Update
+from apps.web.models.message import PhotoSize
 
 from ..tasks import handle_message
 
@@ -40,8 +41,7 @@ class ProcessWebHookViewSet(CreateModelMixin, GenericViewSet):
             status=status.HTTP_201_CREATED,
         )
 
-    @staticmethod
-    def handle_message(data):
+    def handle_message(self, data):
         bot = data['bot']
         user, _ = AppUser.objects.get_or_create(**data['message']['from_user'])
         chat, _ = Chat.objects.get_or_create(**data['message']['chat'])
@@ -49,9 +49,12 @@ class ProcessWebHookViewSet(CreateModelMixin, GenericViewSet):
             from_user=user,
             chat=chat,
             date=data['message']['date'],
-            text=data['message']['text'],
+            text=data['message'].get('text'),
             message_id=data['message']['message_id'],
         )
+
+        self.attach_photo_to_message(data=data['message'], message=message)
+
         update, _ = Update.objects.get_or_create(
             bot=bot,
             message=message,
@@ -61,24 +64,28 @@ class ProcessWebHookViewSet(CreateModelMixin, GenericViewSet):
 
     @staticmethod
     def extract_callback_message(callback):
-        if 'message' in callback:
-            user, _ = AppUser.objects.get_or_create(
-                **callback['message']['from']
-            )
-            chat, _ = Chat.objects.get_or_create(
-                **callback['message']['chat']
-            )
+        user, _ = AppUser.objects.get_or_create(
+            **callback['message']['from']
+        )
+        chat, _ = Chat.objects.get_or_create(
+            **callback['message']['chat']
+        )
 
-            message, _ = Message.objects.get_or_create(
-                message_id=callback['message']['message_id'],
-                from_user=user,
-                chat=chat,
-                date=callback['message']['date'],
-                text=callback['message']['text']
-            )
-        else:
-            message = None
+        message, _ = Message.objects.get_or_create(
+            message_id=callback['message']['message_id'],
+            from_user=user,
+            chat=chat,
+            date=callback['message']['date'],
+            text=callback['message'].get('text'),
+        )
         return message
+
+    @staticmethod
+    def attach_photo_to_message(data, message):
+        photos = data.get('photo', [])
+        for photo in photos:
+            photo.pop('message', None)
+            PhotoSize.objects.create(**photo, message=message)
 
     def handle_callback(self, data):
         bot = data['bot']
@@ -86,13 +93,22 @@ class ProcessWebHookViewSet(CreateModelMixin, GenericViewSet):
             **data['callback_query']['from_user']
         )
         chat, _ = Chat.objects.get_or_create(**data['callback_query']['chat'])
-        message = self.extract_callback_message(data['callback_query'])
+
+        message = data['callback_query'].get('message')
+        if message:
+            message = self.extract_callback_message(data['callback_query'])
+            self.attach_photo_to_message(
+                data=data['callback_query']['message'],
+                message=message
+            )
+
         callback_query, _ = CallbackQuery.objects.get_or_create(
             from_user=user,
             message=message,
             data=data['callback_query']['data'],
             callback_id=data['callback_query']['id'],
         )
+
         update, _ = Update.objects.get_or_create(
             bot=bot,
             message=message,

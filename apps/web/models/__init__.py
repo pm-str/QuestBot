@@ -6,6 +6,7 @@ from .step import Step
 from .user import AppUser
 from .condition import Condition
 from .message import Message
+from .message import PhotoSize
 from .bot import Bot
 from .chat import Chat
 from .update import Update

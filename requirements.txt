@@ -13,3 +13,4 @@ pytz==2017.3
 redis==2.10.6
 typing==3.6.2
 django-celery-results==1.0.1
+Pillow

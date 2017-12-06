@@ -6,6 +6,27 @@ from apps.config import settings
 from .abstract import TimeStampModel
 
 
+class PhotoSize(TimeStampModel):
+    file_id = models.CharField(
+        max_length=1000,
+        primary_key=True,
+        unique=True,
+        db_index=True,
+        help_text=_('Unique identifier for this file.'),
+        verbose_name=_('File ID'),
+    )
+    width = models.IntegerField(verbose_name=_('Image width'))
+    height = models.IntegerField(verbose_name=_('Image height'))
+    file_size = models.IntegerField(verbose_name=_('File size'))
+    message = models.ForeignKey(
+        to='Message',
+        related_name='photos',
+        verbose_name=_('From message'),
+        blank=True,
+        null=True,
+    )
+
+
 class Message(TimeStampModel):
     message_id = models.BigIntegerField(
         verbose_name='Message id',
@@ -29,19 +50,18 @@ class Message(TimeStampModel):
         verbose_name='From User',
         help_text=_('Retrieved user from'),
     )
-    photo = models.ImageField(
-        verbose_name=_('Photo File'),
-        help_text='Image attached to this message',
-        null=True,
-        blank=True,
-    )
     chat = models.ForeignKey(
         to='Chat',
         related_name='messages',
         verbose_name='Chat id',
         help_text='Retrieved from Telegram API chat id',
     )
-    text = models.TextField(max_length=2500, verbose_name='Message text')
+    text = models.TextField(
+        max_length=2500,
+        verbose_name='Message text',
+        null=True,
+        blank=True,
+    )
 
     class Meta:
         verbose_name = _('Message')

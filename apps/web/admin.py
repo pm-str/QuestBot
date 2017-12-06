@@ -9,6 +9,10 @@ class StepInline(admin.TabularInline):
     model = Step
 
 
+class PhotoSizeInline(admin.TabularInline):
+    model = PhotoSize
+
+
 class HandlerInline(admin.TabularInline):
     model = Handler
     exclude = ('allowed',)
@@ -33,7 +37,7 @@ class BotAdmin(admin.ModelAdmin):
 class MessageAdmin(admin.ModelAdmin):
     list_display = ('message_id', 'from_user', 'date',)
     list_filter = ('from_user', 'chat',)
-
+    inlines = (PhotoSizeInline, )
 
 @admin.register(Update)
 class UpdateAdmin(admin.ModelAdmin):

@@ -82,6 +82,10 @@ class Bot(TimeStampModel):
 
         self._bot = TelegramBot(token=self.token)
 
+    def get_file(self, file_id):
+        """Download file by link"""
+        return self._bot.getFile(file_id)
+
     def set_webhook(self, url):
         """Set webhook for Telegram bot"""
         self._bot.set_webhook(webhook_url=url)
