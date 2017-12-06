@@ -34,6 +34,15 @@ class AppUserModelSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = AppUser
+        fields = [
+            'id',
+            'first_name',
+            'last_name',
+            'username',
+            'is_bot',
+            'language_code',
+            'password',
+        ]
 
 
 class TimeStampField(serializers.Field):

@@ -29,17 +29,23 @@ class Message(TimeStampModel):
         verbose_name='From User',
         help_text=_('Retrieved user from'),
     )
+    photo = models.ImageField(
+        verbose_name=_('Photo File'),
+        help_text='Image attached to this message',
+        null=True,
+        blank=True,
+    )
     chat = models.ForeignKey(
         to='Chat',
         related_name='messages',
         verbose_name='Chat id',
         help_text='Retrieved from Telegram API chat id',
     )
-    text = models.CharField(max_length=2500, verbose_name='Message text')
+    text = models.TextField(max_length=2500, verbose_name='Message text')
 
     class Meta:
         verbose_name = _('Message')
         verbose_name_plural = _('Messages')
 
     def __str__(self):
-        return self.message_id
+        return str(self.message_id)

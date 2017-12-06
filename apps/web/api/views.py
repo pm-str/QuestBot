@@ -8,22 +8,34 @@ from rest_framework.viewsets import GenericViewSet
 from apps.web.api.serializers import UpdateModelSerializer
 from apps.web.models import AppUser, Bot, CallbackQuery, Chat, Message, Update
 
-logger = logging.getLogger(__name__)
+from ..tasks import handle_message
 
 
-class ProcessWebHookAPIView(CreateModelMixin, GenericViewSet):
+class ProcessWebHookViewSet(CreateModelMixin, GenericViewSet):
+    """View to retrieve and handle all user's request, i.e webhook
+
+    Steps:
+        1) Got request with ``hook_id`` param to determine the bot
+        2) Extract message or callback_query.message
+        3) Handle this message by celery task creation
+
+    """
     serializer_class = UpdateModelSerializer
     queryset = Update.objects.all()
 
     def create(self, request, *args, **kwargs):
-        self.request.data['hook_id'] = kwargs.get('hook_id', None)
+        bot_id = kwargs.get('hook_id', None)
+        self.request.data['hook_id'] = bot_id
 
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer)
-        headers = self.get_success_headers(request.data)
+        update = self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+
+        handle_message.delay(update.id)
+
         return Response(
-            request.data,
+            serializer.data,
             headers=headers,
             status=status.HTTP_201_CREATED,
         )
@@ -48,7 +60,7 @@ class ProcessWebHookAPIView(CreateModelMixin, GenericViewSet):
         return update
 
     @staticmethod
-    def message_from_callback(callback):
+    def extract_callback_message(callback):
         if 'message' in callback:
             user, _ = AppUser.objects.get_or_create(
                 **callback['message']['from']
@@ -74,13 +86,13 @@ class ProcessWebHookAPIView(CreateModelMixin, GenericViewSet):
             **data['callback_query']['from_user']
         )
         chat, _ = Chat.objects.get_or_create(**data['callback_query']['chat'])
+        message = self.extract_callback_message(data['callback_query'])
         callback_query, _ = CallbackQuery.objects.get_or_create(
             from_user=user,
             message=message,
             data=data['callback_query']['data'],
             callback_id=data['callback_query']['id'],
         )
-        message = self.message_from_callback(data['callback_query'])
         update, _ = Update.objects.get_or_create(
             bot=bot,
             message=message,

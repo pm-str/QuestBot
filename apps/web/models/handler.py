@@ -51,3 +51,7 @@ class Handler(TimeStampModel):
 
     def __str__(self):
         return self.title
+
+    def check_conditions(self, message) -> bool:
+        """TODO: implement business logic"""
+        return True

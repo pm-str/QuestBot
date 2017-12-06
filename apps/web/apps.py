@@ -10,7 +10,7 @@ class SignalsConfig(AppConfig):
     """Class that set up signals after models are ready"""
 
     name = 'apps.web'
-    verbose_name = 'TelegramTasks'
+    verbose_name = 'Telegram Quests'
 
     def ready(self):
         connect_telegram_bot_signals()

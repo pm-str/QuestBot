@@ -32,7 +32,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.sites',
 
-    'kombu.transport.django',
+    'django_celery_results',
     'django_extensions',
     'ckeditor',
     'constance',
@@ -41,8 +41,10 @@ INSTALLED_APPS = [
     'apps.web'
 ]
 
+# CELERY_RESULT_BACKEND = 'django-cache'
+CELERY_RESULT_BACKEND = 'django-db'
 
-BROKER_URL = 'django://'
+BROKER_URL = 'redis://localhost:6379/0'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

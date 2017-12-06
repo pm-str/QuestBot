@@ -9,18 +9,14 @@ class Response(TimeStampModel):
         verbose_name='Triggering on true',
         default=True,
     )
-    message = models.CharField(
+    message = models.ForeignKey(
+        to='Message',
         verbose_name='Response message',
-        max_length=1000,
+        related_name='responses',
         null=True,
         blank=True,
     )
-    file = models.FileField(
-        verbose_name='Attached file',
-        null=True,
-        blank=True,
-    )
-    requests = models.ForeignKey(
+    handler = models.ForeignKey(
         verbose_name='Attached handler to',
         to='Handler',
         related_name='responses',

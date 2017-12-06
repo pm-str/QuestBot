@@ -1,2 +1,7 @@
 # QuestBot
-I'm going to create bot that will be managed by django and will be able to provide an interfaice for quests.
+Bot is managed by django and able to provide an interfaice for advanced quests.
+
+
+# Useful commands
+
+* **fab celery** - start celery beat

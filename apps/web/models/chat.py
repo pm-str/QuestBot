@@ -59,4 +59,4 @@ class Chat(TimeStampModel):
 
     def __str__(self):
         """Represent chat name"""
-        return self.title
+        return str(self.id)
