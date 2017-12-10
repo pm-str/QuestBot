@@ -1,32 +1,74 @@
 from django.db import models
+from django.utils.translation import ugettext_lazy as _
+
+from rest_framework.exceptions import ValidationError
+
+from apps.web.managers import ResponseManager
+from apps.web.models.bot import Bot
+from apps.web.models.chat import Chat
+from apps.web.models.update import Update
 
 from .abstract import TimeStampModel
 
 
+def username_list(value: str):
+    for string in value.split(' '):
+        if not re.match('[_a-zA-Z0-9]+', string):
+            raise ValidationError(_("List of username is invalid"))
+
+
 class Response(TimeStampModel):
+    manager = ResponseManager()
+
     title = models.CharField(verbose_name='Response title', max_length=1000)
     on_true = models.BooleanField(
-        verbose_name='Triggering on true',
+        verbose_name=_('Triggering on true'),
         default=True,
     )
-    message = models.ForeignKey(
-        to='Message',
-        verbose_name='Response message',
-        related_name='responses',
+    as_reply = models.BooleanField(
+        verbose_name=_('Send as reply'),
+        default=False,
+    )
+    message = models.TextField(
+        max_length=5000,
+        verbose_name=_('Message text'),
+        null=True,
+        blank=True,
+    )
+    keyboard = models.TextField(
+        max_length=2000,
+        verbose_name=_('Keyboard layout'),
         null=True,
         blank=True,
     )
     handler = models.ForeignKey(
-        verbose_name='Attached handler to',
+        verbose_name=_('Attached handler to'),
         to='Handler',
         related_name='responses',
     )
-    redirect_to = models.ManyToManyField(
-        verbose_name='Redirect to users',
-        to='AppUser',
-        related_name='redirected_responses',
+    redirect_to = models.TextField(
+        verbose_name=_('Redirect to'),
+        max_length=1000,
+        help_text=_('List of usernames separated by whitespace'),
         blank=True,
+        validators=[username_list]
     )
 
     def __str__(self):
         return self.title
+
+    def send_message(self, bot: Bot, update: Update):
+        """Method responsible for answer and and related actions"""
+
+        bot.send_message(
+            chat_id=update.get_message().chat.id,
+            reply_message=update if self.as_reply else None,
+            keyboard=self.keyboard,
+            text=self.message,
+        )
+
+        for username in self.redirect_to.split(' '):
+            chat = Chat.objects.filter(username=username).first()
+
+            if chat:
+                bot.send_message(chat_id=chat.id, text=self.message)

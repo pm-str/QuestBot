@@ -46,3 +46,10 @@ class Update(TimeStampModel):
 
     def __str__(self):
         return self.id
+
+    def get_message(self):
+        if self.message:
+            return self.message
+        if self.callback_query:
+            return self.callback_query.message
+        return None

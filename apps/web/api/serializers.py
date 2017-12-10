@@ -1,9 +1,11 @@
 import time
 from datetime import datetime
 
-from constance import config
 from django.conf import settings
+
 from rest_framework import serializers
+
+from constance import config
 
 from apps.web.models import AppUser, Bot, CallbackQuery, Chat, Message, Update
 from apps.web.models.message import PhotoSize

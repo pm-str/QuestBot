@@ -1,12 +1,13 @@
 import logging
 
-from constance import config
-from constance.signals import config_updated
 from django.conf import settings
 from django.contrib.sites.models import Site
 from django.db.models.signals import pre_save
 from django.dispatch import receiver
 from django.urls import reverse
+
+from constance import config
+from constance.signals import config_updated
 
 from apps.web.models.bot import Bot
 

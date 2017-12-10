@@ -1,4 +1,5 @@
 from fabric.api import local
+from fabric.colors import green
 
 
 def celery():
@@ -19,3 +20,17 @@ def localtunnel():
 
     """
     local('lt -h https://questbot.ml -p 8000 -s tunnel')
+
+
+def isort_fix(print_msg=True):
+    """Start isort to fix importing format"""
+    print('Running imports fix\n')
+    return local('isort -rc -y --skip .venv')
+
+
+def pep8():
+    """Check PEP8 errors"""
+
+    isort_fix()
+    print('Running pep8 checker\n')
+    return local('flake8 --config=.flake8')

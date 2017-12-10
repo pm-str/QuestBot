@@ -55,6 +55,8 @@ class Message(TimeStampModel):
         related_name='messages',
         verbose_name='Chat id',
         help_text='Retrieved from Telegram API chat id',
+        null=True,
+        blank=True,
     )
     text = models.TextField(
         max_length=2500,

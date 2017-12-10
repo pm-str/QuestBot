@@ -7,7 +7,7 @@ NOT_STARTED = 'not_started'
 IN_PROCESS = 'in_process'
 FINISHED = 'finished'
 
-choices = (
+STEP_CHOICES = (
     (NOT_STARTED, _("Not started")),
     (IN_PROCESS, _("In process")),
     (FINISHED, _("Finished"))
@@ -20,7 +20,7 @@ class Step(TimeStampModel):
     quest = models.ForeignKey(to='Quest', related_name='steps')
     status = models.CharField(
         verbose_name="Status of step",
-        choices=choices,
+        choices=STEP_CHOICES,
         default=NOT_STARTED,
         max_length=255,
     )

@@ -1,22 +1,29 @@
 import re
+import textwrap
 import uuid
 
-from django.core.exceptions import ValidationError
+from django.conf import settings
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
+
+from rest_framework.exceptions import ValidationError
+
+from constance import config
 from telegram.bot import Bot as TelegramBot
-from telegram.error import InvalidToken
+from telegram.error import InvalidToken, TelegramError
 
 from apps.config import settings
+from apps.web.models.update import Update
 
 from .abstract import TimeStampModel
+
+logger = logging.getLogger(__name__)
 
 
 def validate_token(value):
     if not re.match('[0-9]+:[-_a-zA-Z0-9]+', value):
         raise ValidationError(
-            _("%(value)s is not a valid token"),
-            params={'value': value}
+            _("{value} is not a valid token".format(value=value)),
         )
 
 
@@ -32,7 +39,7 @@ class BotDescriptor(object):
 
 class Bot(TimeStampModel):
     _bot = None
-    bot = BotDescriptor()
+    bot: TelegramBot = BotDescriptor()
     id = models.UUIDField(
         primary_key=True,
         default=uuid.uuid4,
@@ -110,3 +117,47 @@ class Bot(TimeStampModel):
     def hook_id(self) -> str:
         """Return hook_id, i.e. bot id"""
         return str(self.id)
+
+    def send_message(
+            self,
+            chat_id,
+            text,
+            keyboard=None,
+            reply_message: Update=None,
+    ):
+        disable_notification = getattr(config, settings.TELEGRAM_NO_NOTIFY)
+        parse_mode = getattr(config, settings.TELEGRAM_PARSE_MODE)
+        disable_web_page_preview = getattr(config,
+                                           settings.TELEGRAM_NO_LINKS_PREVIEW)
+        reply_message_id = reply_message.get_message().message_id
+
+        msg_texts = []
+
+        # Text of the message to be sent. Max 4096 characters.
+        # Also found as telegram.constants.MAX_MESSAGE_LENGTH
+        for text in text.strip().split('\\n'):
+            for part in textwrap.wrap(text, 4096):
+                msg_texts.append((part, None))
+
+        if keyboard:
+            msg_texts[-1] = (msg_texts[-1][0], keyboard)
+
+        for msg in msg_texts:
+            try:
+                self.bot.send_message(
+                    chat_id=chat_id,
+                    text=msg[0],
+                    parse_mode=parse_mode,
+                    disable_web_page_preview=disable_web_page_preview,
+                    disable_notification=disable_notification,
+                    reply_message_id=reply_message_id,
+                    reply_markup=msg[1],
+                )
+            except TelegramError as r:
+                logger.error("""Error on message send has been occurred. chat: 
+                {}, text: {}, parse_mode: {}, no_links: {}, no_notify: {},
+                reply_message: {}, markup: {},
+                """.format(
+                    chat_id, msg[0], parse_mode, disable_web_page_preview,
+                    disable_notification, reply_message_id, msg[1],
+                ))

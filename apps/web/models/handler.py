@@ -43,6 +43,10 @@ class Handler(TimeStampModel):
         null=True,
         blank=True,
     )
+    priority = models.SmallIntegerField(
+        verbose_name=_('Priority in the queue'),
+        default=1,
+    )
     title = models.CharField(verbose_name="Handler title", max_length=255)
 
     class Meta:
