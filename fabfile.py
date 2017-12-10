@@ -1,5 +1,4 @@
 from fabric.api import local
-from fabric.colors import green
 
 
 def celery():

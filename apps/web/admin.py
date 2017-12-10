@@ -103,6 +103,32 @@ class ConditionAdmin(admin.ModelAdmin):
 class HandlerAdmin(admin.ModelAdmin):
     inlines = (ConditionInline,)
 
+    list_display = ('title', 'slug', 'step',)
+
+    list_filter = ('step',)
+
+    fieldsets = (
+        (None, {
+            'fields': (
+                'title',
+                'slug',
+                'step',
+                'ids_expression',
+            )
+        }),
+        ('Permissions', {
+            'fields': (
+                'allowed',
+            )
+        }),
+        ('Actions', {
+            'fields': (
+                'step_on_success',
+                'step_on_error',
+            )
+        })
+    )
+
 
 @admin.register(Response)
 class ResponseAdmin(admin.ModelAdmin):
@@ -112,6 +138,8 @@ class ResponseAdmin(admin.ModelAdmin):
 @admin.register(Step)
 class StepAdmin(admin.ModelAdmin):
     inlines = (HandlerInline,)
+    list_display = ('title', 'number', 'is_initial', 'status')
+    list_filter = ('quest', 'status',)
 
 
 @admin.register(AppUser)

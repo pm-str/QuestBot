@@ -11,8 +11,13 @@ def handle_message(update: Update):
     bot: Bot = update.bot
     user: AppUser = update.message.from_user
 
-    for step in list(user.steps):
-        handlers = step.handlers.filter(allowed__contains=user)
+    steps = user.steps.all()
+
+    if not steps.count():
+        bot.quest.initialize_user(user)
+
+    for step in steps:
+        handlers = step.handlers.filter(allowed=user)
 
         for handler in handlers:
             is_true = handler.check_conditions(update)
@@ -28,7 +33,7 @@ def handle_message(update: Update):
                 next_step.save()
 
             user.steps.add(step)
-            responses.send_message(bot, update)
+            responses.objects.send_message(bot, update)
 
             step.status = FINISHED
             step.save()

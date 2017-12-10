@@ -33,7 +33,8 @@ class ProcessWebHookViewSet(CreateModelMixin, GenericViewSet):
         update = self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
 
-        handle_message.delay(update.id)
+        handle_message(update)
+        # handle_message.delay(update)
 
         return Response(
             serializer.data,

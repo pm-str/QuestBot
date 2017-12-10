@@ -14,7 +14,8 @@ class Handler(TimeStampModel):
         max_length=500,
         verbose_name='Mathematics expression',
         help_text=_("Allowed / +*()! /. A set of rules by condition's id"),
-        default='{}'
+        null=True,
+        blank=True,
     )
     allowed = models.ManyToManyField(
         to='AppUser',
@@ -42,10 +43,6 @@ class Handler(TimeStampModel):
         related_name='false_handlers',
         null=True,
         blank=True,
-    )
-    priority = models.SmallIntegerField(
-        verbose_name=_('Priority in the queue'),
-        default=1,
     )
     title = models.CharField(verbose_name="Handler title", max_length=255)
 

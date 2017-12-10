@@ -1,24 +1,30 @@
+import re
+
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
-
-from rest_framework.exceptions import ValidationError
 
 from apps.web.managers import ResponseManager
 from apps.web.models.bot import Bot
 from apps.web.models.chat import Chat
 from apps.web.models.update import Update
+from apps.web.querysets import ResponseQuerySet
 
 from .abstract import TimeStampModel
 
 
 def username_list(value: str):
-    for string in value.split(' '):
-        if not re.match('[_a-zA-Z0-9]+', string):
-            raise ValidationError(_("List of username is invalid"))
+    for username in value.split(' '):
+        if not re.match('[_a-zA-Z0-9]+', username):
+            raise ValidationError(
+                _("Username %(username)s is invalid"),
+                code='invalid',
+                params={'username': username},
+            )
 
 
 class Response(TimeStampModel):
-    manager = ResponseManager()
+    objects = ResponseQuerySet.as_manager()
 
     title = models.CharField(verbose_name='Response title', max_length=1000)
     on_true = models.BooleanField(
@@ -52,6 +58,10 @@ class Response(TimeStampModel):
         help_text=_('List of usernames separated by whitespace'),
         blank=True,
         validators=[username_list]
+    )
+    priority = models.SmallIntegerField(
+        verbose_name=_('Priority in the queue'),
+        default=1,
     )
 
     def __str__(self):

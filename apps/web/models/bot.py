@@ -1,12 +1,12 @@
+import logging
 import re
 import textwrap
 import uuid
 
 from django.conf import settings
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
-
-from rest_framework.exceptions import ValidationError
 
 from constance import config
 from telegram.bot import Bot as TelegramBot
@@ -23,7 +23,9 @@ logger = logging.getLogger(__name__)
 def validate_token(value):
     if not re.match('[0-9]+:[-_a-zA-Z0-9]+', value):
         raise ValidationError(
-            _("{value} is not a valid token".format(value=value)),
+            _("%{value}s is not a valid token"),
+            code='invalid',
+            params={'value': value},
         )
 
 
