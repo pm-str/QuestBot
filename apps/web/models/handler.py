@@ -54,7 +54,11 @@ class Handler(TimeStampModel):
     def __str__(self):
         return self.title
 
-    def check_handler_conditions(self, update: Update) -> bool:
+    def check_handler_conditions(
+            self,
+            update: Update,
+            specify_ids: bool = True,
+    ) -> bool:
         """Responsible for conditions checking
 
         Ensure that massage fits in with the condition rules
@@ -62,10 +66,11 @@ class Handler(TimeStampModel):
         """
         conditions = self.conditions
 
-        if self.ids_expression.strip():
+        if self.ids_expression:
             expr = self.ids_expression.replace(' ', '') + ' '
         elif conditions.count():
-            expr = '{}' * conditions.count()
+            expr = '{}' * conditions.count() + ' '
+            specify_ids = False
         else:
             return False
 
@@ -76,9 +81,12 @@ class Handler(TimeStampModel):
         formatted_expr = ''
         for i in range(len(expr)-1):
             formatted_expr += expr[i]
-            if expr[i] == '{' and expr[i+1].isdigit():
+            if specify_ids and expr[i] == '{' and expr[i+1].isdigit():
                 formatted_expr += '#'
 
-        result = eval(formatted_expr.format(**cond_result)) is True
+        if specify_ids:
+            filled_expr = formatted_expr.format(**cond_result)
+        else:
+            filled_expr = formatted_expr.format(*list(cond_result.values()))
 
-        return result
+        return eval(filled_expr) is True

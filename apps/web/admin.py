@@ -10,6 +10,11 @@ class StepInline(admin.TabularInline):
     model = Step
 
 
+class ResponseInline(admin.TabularInline):
+    model = Response
+    fields = ('title', 'on_true', 'as_reply', 'priority', )
+
+
 class PhotoSizeInline(admin.TabularInline):
     model = PhotoSize
     readonly_fields = ('url',)
@@ -101,7 +106,7 @@ class ConditionAdmin(admin.ModelAdmin):
 
 @admin.register(Handler)
 class HandlerAdmin(admin.ModelAdmin):
-    inlines = (ConditionInline,)
+    inlines = (ConditionInline, ResponseInline)
 
     list_display = ('title', 'slug', 'step',)
 
@@ -116,17 +121,18 @@ class HandlerAdmin(admin.ModelAdmin):
                 'ids_expression',
             )
         }),
-        ('Permissions', {
-            'fields': (
-                'allowed',
-            )
-        }),
         ('Actions', {
             'fields': (
                 'step_on_success',
                 'step_on_error',
             )
-        })
+        }),
+        ('Permissions', {
+            'classes': ('collapse',),
+            'fields': (
+                'allowed',
+            )
+        }),
     )
 
 

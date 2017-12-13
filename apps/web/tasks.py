@@ -10,11 +10,10 @@ def handle_message(update: Update):
     bot: Bot = update.bot
     user: AppUser = update.message.from_user
 
-    step = user.step
-
-    if not step:
+    if not user.step:
         bot.quest.initialize_user(user)
 
+    step = user.step
     handlers = step.handlers.filter(allowed=user)
 
     for handler in handlers:
