@@ -12,4 +12,5 @@ class StepQuerySet(models.QuerySet):
 
 class ResponseQuerySet(models.QuerySet):
     def send_message(self, bot, update):
-        self.send_message(bot, update)
+        for response in self.all():
+            response.send_message(bot, update)

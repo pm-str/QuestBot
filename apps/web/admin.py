@@ -138,17 +138,17 @@ class ResponseAdmin(admin.ModelAdmin):
 @admin.register(Step)
 class StepAdmin(admin.ModelAdmin):
     inlines = (HandlerInline,)
-    list_display = ('title', 'number', 'is_initial', 'status')
-    list_filter = ('quest', 'status',)
+    list_display = ('title', 'number', 'is_initial', )
+    list_filter = ('quest', )
 
 
 @admin.register(AppUser)
 class AppUserAdmin(admin.ModelAdmin):
     exclude = ('groups',)
     readonly_fields = ('password', 'last_login')
-    list_display = ('username', 'email', 'device_uid', 'is_staff')
+    list_display = ('username', 'email', 'device_uid', 'is_staff', 'step')
     list_filter = (
-        'steps__number',
+        'step__number',
         ('is_staff', admin.BooleanFieldListFilter),
     )
 
@@ -158,7 +158,7 @@ class AppUserAdmin(admin.ModelAdmin):
                 'username',
                 'first_name',
                 'last_name',
-                'steps',
+                'step',
                 'email',
                 'device_uid',
             )

@@ -27,5 +27,5 @@ class Quest(TimeStampModel):
         Add one unique step with active ``is_initial`` flag
 
         """
-        initial_step = self.steps.initial()
-        user.steps.add(initial_step)
+        user.step = self.steps.initial()
+        user.save()

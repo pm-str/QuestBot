@@ -10,11 +10,12 @@ class AppUser(AbstractUser):
         max_length=255,
     )
     is_bot = models.BooleanField(verbose_name='User is a bot', default=False)
-    steps = models.ManyToManyField(
+    step = models.ForeignKey(
         to='Step',
         related_name='users',
         verbose_name="User's level",
         blank=True,
+        null=True,
     )
     language_code = models.CharField(
         max_length=10,
