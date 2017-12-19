@@ -1,6 +1,7 @@
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
+from apps.web.conditions_parsing import NumericStringParser
 from apps.web.models.update import Update
 from .abstract import TimeStampModel
 
@@ -72,7 +73,7 @@ class Handler(TimeStampModel):
             expr = '{}' * conditions.count() + ' '
             specify_ids = False
         else:
-            return False
+            return True
 
         cond_result = {}
         for i in self.conditions.all():
@@ -89,4 +90,7 @@ class Handler(TimeStampModel):
         else:
             filled_expr = formatted_expr.format(*list(cond_result.values()))
 
-        return eval(filled_expr) is True
+        nsp = NumericStringParser()
+        result = nsp.eval(filled_expr)
+
+        return result is True

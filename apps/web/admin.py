@@ -12,7 +12,8 @@ class StepInline(admin.TabularInline):
 
 class ResponseInline(admin.TabularInline):
     model = Response
-    fields = ('title', 'on_true', 'as_reply', 'priority', )
+    fields = ('id', 'title', 'on_true', 'as_reply', 'priority', )
+    readonly_fields = ('id',)
 
 
 class PhotoSizeInline(admin.TabularInline):
@@ -39,7 +40,7 @@ class HandlerInline(admin.TabularInline):
 class ConditionInline(admin.TabularInline):
     model = Condition
     readonly_fields = ('id',)
-    fields = ('id', 'value', 'rule',)
+    fields = ('id', 'value', 'matched_field', 'rule',)
 
 
 @admin.register(Bot)

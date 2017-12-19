@@ -1,17 +1,9 @@
-from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
 from apps.web.querysets import StepQuerySet
+from apps.web.validators import only_initial
 from .abstract import TimeStampModel
-
-
-def only_initial(value):
-    if value and Step.objects.filter(is_initial=True).count():
-        raise ValidationError(
-            'Only one field must be unique',
-            code='invalid',
-        )
 
 
 class Step(TimeStampModel):

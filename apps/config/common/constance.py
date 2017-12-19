@@ -13,6 +13,9 @@ TELEGRAM_NO_LINKS_PREVIEW = 'telegram_no_links_preview'
 TELEGRAM_PARSE_MODE = 'telegram_parse_mode'
 TELEGRAM_NO_NOTIFY = 'telegram_no_notify'
 
+JINJA2_EXTENTIONS = 'jinja2_extentions'
+JINJA2_TEMPLATES_CONTEXT = 'jinja2_templates_context'
+
 CONSTANCE_ADDITIONAL_FIELDS = {
     'parse_mode_select': ['django.forms.fields.ChoiceField', {
         'widget': 'django.forms.Select',
@@ -50,5 +53,15 @@ CONSTANCE_CONFIG = {
         False,
         'Send user notification about chat updates',
         bool,
+    ),
+    JINJA2_EXTENTIONS: (
+        "['jinja2_time.TimeExtension,']",
+        'List of enabled extensions',
+        str,
+    ),
+    JINJA2_TEMPLATES_CONTEXT: (
+        "{}",
+        'Dict of context params for Jinja2 templates',
+        str,
     )
 }

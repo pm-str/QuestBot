@@ -1,5 +1,4 @@
 import logging
-import re
 import textwrap
 import uuid
 
@@ -14,19 +13,11 @@ from telegram.error import InvalidToken, TelegramError
 
 from apps.config import settings
 from apps.web.models.update import Update
+from apps.web.validators import validate_token
 
 from .abstract import TimeStampModel
 
 logger = logging.getLogger(__name__)
-
-
-def validate_token(value):
-    if not re.match('[0-9]+:[-_a-zA-Z0-9]+', value):
-        raise ValidationError(
-            _("%{value}s is not a valid token"),
-            code='invalid',
-            params={'value': value},
-        )
 
 
 class BotDescriptor(object):

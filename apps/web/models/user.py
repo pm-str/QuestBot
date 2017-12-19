@@ -20,7 +20,9 @@ class AppUser(AbstractUser):
     language_code = models.CharField(
         max_length=10,
         verbose_name='Language code',
-        help_text='Language code from user messages got for the first time'
+        help_text='Language code from user messages got for the first time',
+        blank=True,
+        null=True,
     )
 
     def __str__(self):

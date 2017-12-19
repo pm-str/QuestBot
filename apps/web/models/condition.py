@@ -18,7 +18,7 @@ CONTAIN_A_VIDEO = 'contain_a_video'
 RECEIVED_BEFORE = 'received_before'
 RECEIVED_AFTER = 'received_after'
 
-CHOICES = (
+RULE_CHOICES = (
     (FULL_COINCIDENCE, _('Full coincidence')),
     (TO_BE_IN, _('To be in')),
     (STARTS_WITH, _('Starts with')),
@@ -32,14 +32,32 @@ CHOICES = (
     (RECEIVED_AFTER, _('Received after')),
 )
 
+ANY_MESSAGE = 'any_message'
+MESSAGE_TEXT = 'message_text'
+CALLBACK_MESSAGE_TEXT = 'callback_message_text'
+CALLBACK_DATA = 'callback data'
+
+FIELD_CHOICES = (
+    (ANY_MESSAGE, _('Any message')),
+    (MESSAGE_TEXT, _('Message text')),
+    (CALLBACK_MESSAGE_TEXT, _('Callback message text')),
+    (CALLBACK_DATA, _('Callback command')),
+)
+
 
 class Condition(TimeStampModel):
     value = models.CharField(verbose_name='Answer or pattern', max_length=1000)
     rule = models.CharField(
         verbose_name='Step title',
         max_length=255,
-        choices=CHOICES,
+        choices=RULE_CHOICES,
         default=FULL_COINCIDENCE,
+    )
+    matched_field = models.CharField(
+        verbose_name='Matched field',
+        max_length=255,
+        choices=FIELD_CHOICES,
+        default=ANY_MESSAGE,
     )
     handler = models.ForeignKey(
         to='Handler',
@@ -52,8 +70,20 @@ class Condition(TimeStampModel):
 
     def is_match_to_rule(self, update: Update):
         """Check if update object match to the specified rule"""
-        msg = update.get_message()
-        msg_text = msg.text.strip()
+        msg = ''
+
+        if self.matched_field == ANY_MESSAGE:
+            msg = update.get_message().text
+        elif self.matched_field == MESSAGE_TEXT:
+            msg = update.message.text
+        elif self.matched_field == CALLBACK_MESSAGE_TEXT:
+            msg = update.callback_query.message.text
+        elif self.matched_field == CALLBACK_DATA:
+            msg = update.callback_query.data
+
+        print(msg, '*********')
+
+        msg_text = msg.strip()
 
         if self.rule == FULL_COINCIDENCE:
             return msg_text == self.value

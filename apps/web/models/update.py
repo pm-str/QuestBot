@@ -52,4 +52,4 @@ class Update(TimeStampModel):
             return self.message
         if self.callback_query:
             return self.callback_query.message
-        return ''
+        raise AttributeError

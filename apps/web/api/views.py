@@ -66,7 +66,7 @@ class ProcessWebHookViewSet(CreateModelMixin, GenericViewSet):
     @staticmethod
     def extract_callback_message(callback):
         user, _ = AppUser.objects.get_or_create(
-            **callback['message']['from']
+            **callback['message']['from_user']
         )
         chat, _ = Chat.objects.get_or_create(
             **callback['message']['chat']
@@ -93,7 +93,9 @@ class ProcessWebHookViewSet(CreateModelMixin, GenericViewSet):
         user, _ = AppUser.objects.get_or_create(
             **data['callback_query']['from_user']
         )
-        chat, _ = Chat.objects.get_or_create(**data['callback_query']['chat'])
+        chat, _ = Chat.objects.get_or_create(
+            **data['callback_query']['message']['chat']
+        )
 
         message = data['callback_query'].get('message')
         if message:
@@ -107,7 +109,7 @@ class ProcessWebHookViewSet(CreateModelMixin, GenericViewSet):
             from_user=user,
             message=message,
             data=data['callback_query']['data'],
-            callback_id=data['callback_query']['id'],
+            id=data['callback_query']['id'],
         )
 
         update, _ = Update.objects.get_or_create(
