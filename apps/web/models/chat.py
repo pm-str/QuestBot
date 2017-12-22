@@ -52,6 +52,13 @@ class Chat(TimeStampModel):
         blank=True,
         help_text=_('Last name of the other party in a private chat'),
     )
+    default_keyboard = models.TextField(
+        max_length=1000,
+        null=True,
+        blank=True,
+        verbose_name=_('Chat menu'),
+        help_text=_('Chat menu, is used to inherit markup keyboard styles')
+    )
 
     class Meta:
         verbose_name = _('Chat')

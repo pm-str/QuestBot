@@ -3,6 +3,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from apps.web.conditions_parsing import NumericStringParser
 from apps.web.models.update import Update
+from apps.web.validators import validate_conditions
 from .abstract import TimeStampModel
 
 
@@ -18,17 +19,12 @@ class Handler(TimeStampModel):
         help_text=_("Allowed / +*()! /. A set of rules by condition's id"),
         null=True,
         blank=True,
+        validators=[validate_conditions]
     )
     allowed = models.ManyToManyField(
         to='AppUser',
         related_name='handlers',
         blank=True,
-    )
-    slug = models.CharField(
-        verbose_name="Handler command",
-        max_length=255,
-        blank=True,
-        null=True,
     )
     step_on_success = models.ForeignKey(
         to='Step',
@@ -59,7 +55,7 @@ class Handler(TimeStampModel):
             self,
             update: Update,
             specify_ids: bool = True,
-    ) -> bool:
+    ) -> int:
         """Responsible for conditions checking
 
         Ensure that massage fits in with the condition rules
@@ -73,11 +69,12 @@ class Handler(TimeStampModel):
             expr = '{}' * conditions.count() + ' '
             specify_ids = False
         else:
-            return True
+            return 0
 
-        cond_result = {}
-        for i in self.conditions.all():
-            cond_result[''.join(['#', str(i.id)])] = i.is_match_to_rule(update)
+        cond_result = {
+            ''.join(['#', str(i.id)]): int(i.is_match_to_rule(update))
+            for i in self.conditions.all()
+        }
 
         formatted_expr = ''
         for i in range(len(expr)-1):
@@ -93,4 +90,4 @@ class Handler(TimeStampModel):
         nsp = NumericStringParser()
         result = nsp.eval(filled_expr)
 
-        return result is True
+        return result

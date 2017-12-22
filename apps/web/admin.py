@@ -33,7 +33,7 @@ class HandlerInline(admin.TabularInline):
     model = Handler
     exclude = ('allowed',)
     readonly_fields = ('id', )
-    fields = ('id', 'ids_expression', 'title', 'slug',)
+    fields = ('id', 'ids_expression', 'title',)
     fk_name = 'step'
 
 
@@ -109,7 +109,7 @@ class ConditionAdmin(admin.ModelAdmin):
 class HandlerAdmin(admin.ModelAdmin):
     inlines = (ConditionInline, ResponseInline)
 
-    list_display = ('title', 'slug', 'step',)
+    list_display = ('title', 'step',)
 
     list_filter = ('step',)
 
@@ -117,7 +117,6 @@ class HandlerAdmin(admin.ModelAdmin):
         (None, {
             'fields': (
                 'title',
-                'slug',
                 'step',
                 'ids_expression',
             )

@@ -12,5 +12,5 @@ class StepQuerySet(models.QuerySet):
 
 class ResponseQuerySet(models.QuerySet):
     def send_message(self, bot, update):
-        for response in self.all():
+        for response in self.order_by('priority').all():
             response.send_message(bot, update)

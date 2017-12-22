@@ -8,13 +8,14 @@ from apps.web.models import AppUser, Bot, Update
 @shared_task
 def handle_message(update: Update):
     bot: Bot = update.bot
-    user: AppUser = update.message.from_user
+    user: AppUser = update.get_sender
 
     if not user.step:
         bot.quest.initialize_user(user)
 
     step = user.step
-    handlers = step.handlers.filter(allowed=user)
+    # handlers = step.handlers.filter(allowed=user)
+    handlers = step.handlers.all()
 
     for handler in handlers:
         is_true = handler.check_handler_conditions(update)

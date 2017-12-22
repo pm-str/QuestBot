@@ -14,7 +14,9 @@ class Update(TimeStampModel):
         to='Message',
         related_name='updates',
         verbose_name=_('Message ID'),
-        help_text=_('Update action for particular massage')
+        help_text=_('Update action for particular massage'),
+        null=True,
+        blank=True,
     )
     callback_query = models.ForeignKey(
         to='CallbackQuery',
@@ -47,9 +49,18 @@ class Update(TimeStampModel):
     def __str__(self):
         return self.id
 
+    @property
     def get_message(self):
         if self.message:
             return self.message
         if self.callback_query:
             return self.callback_query.message
+        raise AttributeError
+
+    @property
+    def get_sender(self):
+        if self.message:
+            return self.message.from_user
+        if self.callback_query:
+            return self.callback_query.from_user
         raise AttributeError

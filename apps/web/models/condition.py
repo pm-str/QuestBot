@@ -48,7 +48,7 @@ FIELD_CHOICES = (
 class Condition(TimeStampModel):
     value = models.CharField(verbose_name='Answer or pattern', max_length=1000)
     rule = models.CharField(
-        verbose_name='Step title',
+        verbose_name='Pattern',
         max_length=255,
         choices=RULE_CHOICES,
         default=FULL_COINCIDENCE,
@@ -72,16 +72,17 @@ class Condition(TimeStampModel):
         """Check if update object match to the specified rule"""
         msg = ''
 
-        if self.matched_field == ANY_MESSAGE:
-            msg = update.get_message().text
-        elif self.matched_field == MESSAGE_TEXT:
-            msg = update.message.text
-        elif self.matched_field == CALLBACK_MESSAGE_TEXT:
-            msg = update.callback_query.message.text
-        elif self.matched_field == CALLBACK_DATA:
-            msg = update.callback_query.data
+        cb = update.callback_query
+        mg = update.message
 
-        print(msg, '*********')
+        if self.matched_field == ANY_MESSAGE:
+            msg = update.get_message.text
+        elif self.matched_field == MESSAGE_TEXT and mg:
+            msg = update.message.text
+        elif self.matched_field == CALLBACK_MESSAGE_TEXT and cb:
+            msg = update.callback_query.message.text
+        elif self.matched_field == CALLBACK_DATA and cb:
+            msg = update.callback_query.data
 
         msg_text = msg.strip()
 
@@ -94,6 +95,6 @@ class Condition(TimeStampModel):
         elif self.rule == ENDS_WITH:
             return msg_text.endswith(self.value)
         elif self.rule == MATCH_REGEX:
-            return re.match(self.value, msg_text)
+            return bool(re.match(self.value, msg_text))
         elif self.rule == CONTAIN_AN_IMAGE:
             return msg.images.count()

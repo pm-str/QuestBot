@@ -4,9 +4,8 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from jinja2 import Environment
 from telegram import (
-    ReplyKeyboardHide,
-    InlineKeyboardMarkup,
-    InlineKeyboardButton,
+    KeyboardButton,
+    ReplyKeyboardMarkup,
 )
 
 from apps.web.models.bot import Bot
@@ -29,6 +28,22 @@ class Response(TimeStampModel):
     )
     as_reply = models.BooleanField(
         verbose_name=_('Send as reply'),
+        default=False,
+    )
+    inherit_keyboard = models.BooleanField(
+        verbose_name=_('Display last used keyboard'),
+        default=True,
+    )
+    set_default_keyboard = models.BooleanField(
+        verbose_name=_('Save this keyboard as default for chat'),
+        default=False,
+    )
+    delete_previous_keyboard = models.BooleanField(
+        verbose_name=_('Delete previous keyboard'),
+        default=False,
+    )
+    one_time_keyboard = models.BooleanField(
+        verbose_name=_('Hide keyboard after click on'),
         default=False,
     )
     message = models.TextField(
@@ -67,40 +82,48 @@ class Response(TimeStampModel):
 
     def _create_keyboard_button(self, element):
         if isinstance(element, tuple):
-            if element[1].startswith('http'):
-                return InlineKeyboardButton(text=element[0], url=element[1])
-            else:
-                return InlineKeyboardButton(text=element[0],
-                                            callback_data=element[1])
-        else:
-            return InlineKeyboardButton(text=element, callback_data=element)
+            return KeyboardButton(text=element[0])
 
-    def build_keyboard(self, keyboard):
+    def build_keyboard(self, keyboard, one_time_keyboard):
+        built_keyboard = []
+
         if keyboard:
             # since jinja2 template represents for list of buttons
             # it should be converted into python object via ast library
-            built_keyboard = InlineKeyboardMarkup(
+            built_keyboard = ReplyKeyboardMarkup(
                 [[self._create_keyboard_button(element)]
-                 for element in traverse(ast.literal_eval(keyboard))]
+                 for element in traverse(ast.literal_eval(keyboard))],
+                one_time_keyboard=one_time_keyboard,
             )
-        else:
-            built_keyboard = ReplyKeyboardHide()
         return built_keyboard
 
     def send_message(self, bot: Bot, update: Update):
         """Method responsible for answer and and related actions"""
 
+        chat = update.get_message.chat
         env = Environment(extensions=jinja2_extensions())
         keyboard_template = env.from_string(self.keyboard)
         keyboard = keyboard_template.render(jinja2_template_context())
+
+        if self.inherit_keyboard and chat.default_keyboard:
+            keyboard = chat.default_keyboard
+
+        if self.set_default_keyboard:
+            chat.default_keyboard = keyboard
+            chat.save()
+
+        keyboard = self.build_keyboard(keyboard, self.one_time_keyboard)
+
+        if self.delete_previous_keyboard:
+            keyboard = {'hide_keyboard': True}
 
         message_template = env.from_string(self.message)
         message = message_template.render(jinja2_template_context())
 
         bot.send_message(
-            chat_id=update.get_message().chat.id,
+            chat_id=chat.id,
             reply_message=update if self.as_reply else None,
-            keyboard=self.build_keyboard(keyboard),
+            keyboard=keyboard,
             text=message,
         )
 

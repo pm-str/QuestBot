@@ -111,12 +111,32 @@ class Bot(TimeStampModel):
         """Return hook_id, i.e. bot id"""
         return str(self.id)
 
+    def delete_message(self, chat_id, message_id):
+        """Delete message method
+
+        Commonly is used to remove message from previous callback queries,
+        for instance, it can be inline keyboard's markup
+
+        """
+        try:
+            self.bot.delete_message(chat_id=chat_id, message_id=message_id)
+        except TelegramError as r:
+            logger.error("""Error on message deleting has been occurred. chat:
+            {}, message: {}""".format(chat_id, message_id))
+
+    def edit_message_reply_markup(self, chat_id, message_id):
+        self.bot.editMessageReplyMarkup(
+            chat_id=chat_id,
+            message_id=message_id,
+            reply_markup='',
+        )
+
     def send_message(
             self,
             chat_id,
             text,
             keyboard=None,
-            reply_message: Update=None,
+            reply_message: Update = None,
     ):
         disable_notification = getattr(config, settings.TELEGRAM_NO_NOTIFY)
         parse_mode = getattr(config, settings.TELEGRAM_PARSE_MODE)
@@ -124,32 +144,29 @@ class Bot(TimeStampModel):
                                            settings.TELEGRAM_NO_LINKS_PREVIEW)
         reply_message_id = None
         if reply_message:
-            reply_message_id = reply_message.get_message().message_id
+            reply_message_id = reply_message.get_message.message_id
 
         msg_texts = []
 
         # Text of the message to be sent. Max 4096 characters.
         # Also found as telegram.constants.MAX_MESSAGE_LENGTH
-        for text in text.strip().split('\\n'):
-            for part in textwrap.wrap(text, 4096):
-                msg_texts.append((part, None))
-
-        if keyboard:
-            msg_texts[-1] = (msg_texts[-1][0], keyboard)
+        for text in text.strip().split('__'):
+            for part in textwrap.wrap(text, 4048):
+                msg_texts.append(part.replace('||', '\n'))
 
         for msg in msg_texts:
             try:
                 self.bot.send_message(
                     chat_id=chat_id,
-                    text=msg[0],
+                    text=msg,
                     parse_mode=parse_mode,
                     disable_web_page_preview=disable_web_page_preview,
                     disable_notification=disable_notification,
                     reply_message_id=reply_message_id,
-                    reply_markup=msg[1],
+                    reply_markup=keyboard,
                 )
             except TelegramError as r:
-                logger.error("""Error on message send has been occurred. chat: 
+                logger.error("""Error on message send has been occurred. chat:
                 {}, text: {}, parse_mode: {}, no_links: {}, no_notify: {},
                 reply_message: {}, markup: {},
                 """.format(

@@ -114,7 +114,7 @@ class ProcessWebHookViewSet(CreateModelMixin, GenericViewSet):
 
         update, _ = Update.objects.get_or_create(
             bot=bot,
-            message=message,
+            callback_query=callback_query,
             update_id=data['update_id'],
         )
         return update

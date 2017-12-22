@@ -8,7 +8,6 @@ djangorestframework==3.3.3
 Fabric3==1.13.1.post1
 isort==4.2.15
 kombu==3.0.37
-python-telegram-bot==4.2.0
 pytz==2017.3
 redis==2.10.6
 typing==3.6.2
