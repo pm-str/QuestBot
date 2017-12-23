@@ -136,15 +136,12 @@ class Bot(TimeStampModel):
             chat_id,
             text,
             keyboard=None,
-            reply_message: Update = None,
+            reply_message_id= None,
     ):
         disable_notification = getattr(config, settings.TELEGRAM_NO_NOTIFY)
         parse_mode = getattr(config, settings.TELEGRAM_PARSE_MODE)
         disable_web_page_preview = getattr(config,
                                            settings.TELEGRAM_NO_LINKS_PREVIEW)
-        reply_message_id = None
-        if reply_message:
-            reply_message_id = reply_message.get_message.message_id
 
         msg_texts = []
 

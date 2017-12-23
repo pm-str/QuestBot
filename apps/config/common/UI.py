@@ -7,5 +7,6 @@ CKEDITOR_CONFIGS = {
             ['RemoveFormat', 'Source']
         ],
         'enterMode': 2,
+        'entities': False,
     }
 }

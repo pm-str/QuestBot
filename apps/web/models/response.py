@@ -8,11 +8,11 @@ from telegram import (
     ReplyKeyboardMarkup,
 )
 
+from apps.web.models.message import Message
 from apps.web.models.bot import Bot
 from apps.web.models.chat import Chat
-from apps.web.models.update import Update
 from apps.web.querysets import ResponseQuerySet
-from apps.web.utils import traverse, jinja2_extensions, \
+from apps.web.utils import jinja2_extensions, \
     jinja2_template_context, clear_redundant_tags
 from apps.web.validators import username_list, jinja2_template
 
@@ -47,7 +47,7 @@ class Response(TimeStampModel):
         verbose_name=_('Hide keyboard after click on'),
         default=False,
     )
-    message = models.TextField(
+    text = models.TextField(
         max_length=5000,
         verbose_name=_('Message text'),
         validators=[jinja2_template],
@@ -65,6 +65,8 @@ class Response(TimeStampModel):
         verbose_name=_('Attached handler to'),
         to='Handler',
         related_name='responses',
+        blank=True,
+        null=True,
     )
     redirect_to = models.CharField(
         verbose_name=_('Redirect to'),
@@ -92,19 +94,27 @@ class Response(TimeStampModel):
             # since jinja2 template represents for list of buttons
             # it should be converted into python object via ast library
             built_keyboard = ReplyKeyboardMarkup(
-                [[self._create_keyboard_button(element)]
-                 for element in traverse(ast.literal_eval(keyboard))],
+                list(ast.literal_eval(keyboard)),
                 one_time_keyboard=one_time_keyboard,
+                resize_keyboard=True,
             )
         return built_keyboard
 
-    def send_message(self, bot: Bot, update: Update):
+    @staticmethod
+    def render_layout(message, keyboard):
+        env = Environment(extensions=jinja2_extensions())
+        keyboard_template = env.from_string(keyboard)
+        keyboard = keyboard_template.render(jinja2_template_context())
+
+        message_template = env.from_string(clear_redundant_tags(message))
+        message = message_template.render(jinja2_template_context())
+
+        return message, keyboard
+
+    def send_message(self, bot: Bot, chat: Chat, message: Message):
         """Method responsible for answer and and related actions"""
 
-        chat = update.get_message.chat
-        env = Environment(extensions=jinja2_extensions())
-        keyboard_template = env.from_string(self.keyboard)
-        keyboard = keyboard_template.render(jinja2_template_context())
+        text, keyboard = self.render_layout(self.text, self.keyboard)
 
         if self.inherit_keyboard and chat.default_keyboard:
             keyboard = chat.default_keyboard
@@ -113,23 +123,22 @@ class Response(TimeStampModel):
             chat.default_keyboard = keyboard
             chat.save()
 
-        keyboard = self.build_keyboard(keyboard, self.one_time_keyboard)
-
         if self.delete_previous_keyboard:
             keyboard = {'hide_keyboard': True}
-
-        message_template = env.from_string(clear_redundant_tags(self.message))
-        message = message_template.render(jinja2_template_context())
+        else:
+            keyboard = self.build_keyboard(keyboard, self.one_time_keyboard)
 
         bot.send_message(
             chat_id=chat.id,
-            reply_message=update if self.as_reply else None,
+            reply_message_id=(
+                message.message_id if self.as_reply else None
+            ),
             keyboard=keyboard,
-            text=message,
+            text=text,
         )
 
         for username in self.redirect_to.split(' '):
             chat = Chat.objects.filter(username=username).first()
 
             if chat:
-                bot.send_message(chat_id=chat.id, text=self.message)
+                bot.send_message(chat_id=chat.id, text=self.text)

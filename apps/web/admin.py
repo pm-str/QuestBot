@@ -63,6 +63,9 @@ class UpdateAdmin(admin.ModelAdmin):
 
 @admin.register(Chat)
 class ChatAdmin(admin.ModelAdmin):
+    formfield_overrides = {
+        models.TextField: {'widget': CKEditorWidget}
+    }
     list_display = ('id', 'type', 'title',)
 
 

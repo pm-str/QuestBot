@@ -9,6 +9,8 @@ from apps.web.models import AppUser, Bot, Update
 def handle_message(update: Update):
     bot: Bot = update.bot
     user: AppUser = update.get_sender
+    chat = update.get_message.chat
+    message = update.get_message
 
     if not user.step:
         bot.quest.initialize_user(user)
@@ -30,5 +32,5 @@ def handle_message(update: Update):
             user.step = next_step
             user.save()
 
-        responses.send_message(bot, update)
+        responses.send_message(bot, chat, message)
 

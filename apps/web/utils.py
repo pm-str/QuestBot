@@ -4,10 +4,10 @@ from constance import config
 from django.conf import settings
 
 
-def traverse(value, instance=list):
+def plain_to(value, instance=list):
     if isinstance(value, instance):
         for i in value:
-            for item in traverse(i, instance):
+            for item in plain_to(i, instance):
                 yield item
     else:
         yield value
