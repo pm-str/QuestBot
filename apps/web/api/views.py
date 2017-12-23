@@ -8,6 +8,7 @@ from rest_framework.viewsets import GenericViewSet
 from apps.web.api.serializers import UpdateModelSerializer
 from apps.web.models import AppUser, Bot, CallbackQuery, Chat, Message, Update
 from apps.web.models.message import PhotoSize
+from apps.web.utils import allowed_hooks
 
 from ..tasks import handle_message
 
@@ -24,6 +25,7 @@ class ProcessWebHookViewSet(CreateModelMixin, GenericViewSet):
     serializer_class = UpdateModelSerializer
     queryset = Update.objects.all()
 
+    @allowed_hooks
     def create(self, request, *args, **kwargs):
         bot_id = kwargs.get('hook_id', None)
         self.request.data['hook_id'] = bot_id

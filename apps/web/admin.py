@@ -140,6 +140,12 @@ class ResponseAdmin(admin.ModelAdmin):
     formfield_overrides = {
         models.TextField: {'widget': CKEditorWidget}
     }
+    list_filter = ('handler__step', 'handler')
+    list_display = ('title', 'on_true', 'step_number', 'redirect_to', )
+    ordering = ('handler__step', )
+
+    def step_number(self, obj):
+        return obj.handler.step.number
 
 
 @admin.register(Step)
@@ -147,7 +153,6 @@ class StepAdmin(admin.ModelAdmin):
     inlines = (HandlerInline,)
     list_display = ('title', 'number', 'is_initial', )
     list_filter = ('quest', )
-
 
 @admin.register(AppUser)
 class AppUserAdmin(admin.ModelAdmin):

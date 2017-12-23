@@ -2,6 +2,8 @@ import ast
 
 from constance import config
 from django.conf import settings
+from django.http import HttpResponse
+from rest_framework import status
 
 
 def plain_to(value, instance=list):
@@ -37,9 +39,27 @@ def clear_redundant_tags(text: str) -> str:
 
     tags_mapping = {
         '<br />': '',
+        '&nbsp;': ' ',
     }
 
     for (key, value) in tags_mapping.items():
         cp = cp.replace(key, value)
 
     return cp
+
+
+def allowed_hooks(func):
+    def wrapper(*args, **kwargs):
+        request = args[1]
+        data = request.data
+        not_supported = [
+            'edited_message',
+        ]
+        for flags in not_supported:
+            if flags in data:
+                # It would be better to specify HTTP_501_NOT_IMPLEMENTED,
+                # but in this case the request will be repeats
+                return HttpResponse(status=status.HTTP_204_NO_CONTENT)
+
+        return func(*args, **kwargs)
+    return wrapper

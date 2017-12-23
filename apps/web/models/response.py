@@ -12,8 +12,7 @@ from apps.web.models.message import Message
 from apps.web.models.bot import Bot
 from apps.web.models.chat import Chat
 from apps.web.querysets import ResponseQuerySet
-from apps.web.utils import jinja2_extensions, \
-    jinja2_template_context, clear_redundant_tags
+from apps.web.utils import jinja2_extensions, jinja2_template_context
 from apps.web.validators import username_list, jinja2_template
 
 from .abstract import TimeStampModel
@@ -106,7 +105,7 @@ class Response(TimeStampModel):
         keyboard_template = env.from_string(keyboard)
         keyboard = keyboard_template.render(jinja2_template_context())
 
-        message_template = env.from_string(clear_redundant_tags(message))
+        message_template = env.from_string(message)
         message = message_template.render(jinja2_template_context())
 
         return message, keyboard
