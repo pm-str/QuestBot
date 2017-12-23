@@ -78,10 +78,6 @@ class EventAdmin(admin.ModelAdmin):
 
 @admin.register(Quest)
 class QuestAdmin(admin.ModelAdmin):
-    formfield_overrides = {
-        models.TextField: {'widget': CKEditorWidget}
-    }
-
     inlines = (StepInline,)
 
 
@@ -138,7 +134,9 @@ class HandlerAdmin(admin.ModelAdmin):
 
 @admin.register(Response)
 class ResponseAdmin(admin.ModelAdmin):
-    pass
+    formfield_overrides = {
+        models.TextField: {'widget': CKEditorWidget}
+    }
 
 
 @admin.register(Step)

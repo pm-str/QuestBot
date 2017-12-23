@@ -12,7 +12,8 @@ from apps.web.models.bot import Bot
 from apps.web.models.chat import Chat
 from apps.web.models.update import Update
 from apps.web.querysets import ResponseQuerySet
-from apps.web.utils import traverse, jinja2_extensions, jinja2_template_context
+from apps.web.utils import traverse, jinja2_extensions, \
+    jinja2_template_context, clear_redundant_tags
 from apps.web.validators import username_list, jinja2_template
 
 from .abstract import TimeStampModel
@@ -65,7 +66,7 @@ class Response(TimeStampModel):
         to='Handler',
         related_name='responses',
     )
-    redirect_to = models.TextField(
+    redirect_to = models.CharField(
         verbose_name=_('Redirect to'),
         max_length=1000,
         help_text=_('List of usernames separated by whitespace'),
@@ -117,7 +118,7 @@ class Response(TimeStampModel):
         if self.delete_previous_keyboard:
             keyboard = {'hide_keyboard': True}
 
-        message_template = env.from_string(self.message)
+        message_template = env.from_string(clear_redundant_tags(self.message))
         message = message_template.render(jinja2_template_context())
 
         bot.send_message(

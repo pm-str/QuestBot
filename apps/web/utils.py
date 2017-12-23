@@ -30,3 +30,16 @@ def jinja2_template_context():
         value = {}
 
     return value
+
+
+def clear_redundant_tags(text: str) -> str:
+    cp = text
+
+    tags_mapping = {
+        '<br />': '',
+    }
+
+    for (key, value) in tags_mapping.items():
+        cp = cp.replace(key, value)
+
+    return cp

@@ -151,8 +151,8 @@ class Bot(TimeStampModel):
         # Text of the message to be sent. Max 4096 characters.
         # Also found as telegram.constants.MAX_MESSAGE_LENGTH
         for text in text.strip().split('__'):
-            for part in textwrap.wrap(text, 4048):
-                msg_texts.append(part.replace('||', '\n'))
+            for part in textwrap.wrap(text, 4096, replace_whitespace=False):
+                msg_texts.append(part)
 
         for msg in msg_texts:
             try:
