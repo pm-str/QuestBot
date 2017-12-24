@@ -1,3 +1,5 @@
+import re
+
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
@@ -7,11 +9,32 @@ from apps.web.validators import validate_conditions
 from .abstract import TimeStampModel
 
 
+BUTTON_TEXT = 'button_text'
+MESSAGE_TEXT = 'message_text'
+CALLBACK_MESSAGE_TEXT = 'callback_message_text'
+CALLBACK_DATA = 'callback data'
+
+FIELD_CHOICES = (
+    (BUTTON_TEXT, _('Button text')),
+    (MESSAGE_TEXT, _('Message text')),
+    (CALLBACK_MESSAGE_TEXT, _('Callback message text')),
+    (CALLBACK_DATA, _('Callback command')),
+)
+
+
 class Handler(TimeStampModel):
     step = models.ForeignKey(
         to='Step',
         help_text=_('Handle particular actions for this step'),
         related_name='handlers',
+        on_delete=models.CASCADE,
+    )
+    enabled_on = SelectMultipleField(
+        verbose_name=_('Enabled on'),
+        help_text=_('Enabled only on following requests'),
+        max_length=255,
+        choices=FIELD_CHOICES,
+        default=BUTTON_TEXT,
     )
     ids_expression = models.CharField(
         max_length=500,
@@ -33,6 +56,7 @@ class Handler(TimeStampModel):
         related_name='true_handlers',
         null=True,
         blank=True,
+        on_delete=models.CASCADE,
     )
     step_on_error = models.ForeignKey(
         to='Step',
@@ -41,6 +65,7 @@ class Handler(TimeStampModel):
         related_name='false_handlers',
         null=True,
         blank=True,
+        on_delete=models.CASCADE,
     )
     title = models.CharField(verbose_name="Handler title", max_length=255)
 
@@ -49,13 +74,13 @@ class Handler(TimeStampModel):
         verbose_name_plural = _('Handlers')
 
     def __str__(self):
-        return self.title
+        return ' | '.join([str(self.step.number), self.title, ])
 
     def check_handler_conditions(
             self,
             update: Update,
             specify_ids: bool = True,
-    ) -> int:
+    ) -> bool:
         """Responsible for conditions checking
 
         Ensure that massage fits in with the condition rules
@@ -67,9 +92,11 @@ class Handler(TimeStampModel):
             expr = self.ids_expression.replace(' ', '') + ' '
         elif conditions.count():
             expr = '{}' * conditions.count() + ' '
-            specify_ids = False
         else:
-            return 0
+            return False
+
+        if not re.match('^.*{\d+}.*$', expr):
+            specify_ids = False
 
         cond_result = {
             ''.join(['#', str(i.id)]): int(i.is_match_to_rule(update))
@@ -90,4 +117,4 @@ class Handler(TimeStampModel):
         nsp = NumericStringParser()
         result = nsp.eval(filled_expr)
 
-        return result
+        return result > 0

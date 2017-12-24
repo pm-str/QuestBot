@@ -40,7 +40,7 @@ class HandlerInline(admin.TabularInline):
 class ConditionInline(admin.TabularInline):
     model = Condition
     readonly_fields = ('id',)
-    fields = ('id', 'value', 'matched_field', 'rule',)
+    fields = ('id', 'value', 'rule',)
 
 
 @admin.register(Bot)
@@ -115,6 +115,7 @@ class HandlerAdmin(admin.ModelAdmin):
     fieldsets = (
         (None, {
             'fields': (
+                'enabled_on',
                 'title',
                 'step',
                 'ids_expression',

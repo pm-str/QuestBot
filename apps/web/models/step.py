@@ -11,7 +11,11 @@ class Step(TimeStampModel):
     is_initial = models.BooleanField(default=False, validators=[only_initial])
     title = models.CharField(verbose_name=_('Step title'), max_length=255)
     number = models.SmallIntegerField(verbose_name=_('Step Number'))
-    quest = models.ForeignKey(to='Quest', related_name='steps')
+    quest = models.ForeignKey(
+        to='Quest',
+        related_name='steps',
+        on_delete=models.CASCADE,
+    )
 
     class Meta:
         ordering = ('number', 'title',)

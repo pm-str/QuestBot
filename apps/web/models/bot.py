@@ -52,6 +52,7 @@ class Bot(TimeStampModel):
         help_text=_('API user. Automatically retrieved from Telegram'),
         blank=True,
         null=True,
+        on_delete=models.CASCADE,
     )
     enabled = models.BooleanField(
         default=True,
@@ -65,6 +66,7 @@ class Bot(TimeStampModel):
         help_text=_('User that owns this bot'),
         blank=True,
         null=True,
+        on_delete=models.CASCADE,
     )
 
     class Meta:

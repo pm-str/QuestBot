@@ -21,9 +21,20 @@ STATUS_CHOICES = (
 
 
 class Event(TimeStampModel):
-    name = models.CharField(verbose_name='Event name', max_length=255)
-    bot = models.ForeignKey('Bot', null=True)
-    chat = models.ForeignKey('Chat', null=True)
+    name = models.CharField(
+        verbose_name='Event name',
+        max_length=255,
+    )
+    bot = models.ForeignKey(
+        to='Bot',
+        null=True,
+        on_delete=models.CASCADE,
+    )
+    chat = models.ForeignKey(
+        to='Chat',
+        null=True,
+        on_delete=models.CASCADE,
+    )
     send_date = models.DateTimeField(
         verbose_name='Time to send on',
         default=timezone.now(),
@@ -38,11 +49,13 @@ class Event(TimeStampModel):
         verbose_name='Reply to message',
         null=True,
         blank=True,
+        on_delete=models.CASCADE,
     )
     response = models.ForeignKey(
         to='Response',
         verbose_name='Responses with data',
-        null=True
+        null=True,
+        on_delete=models.CASCADE,
     )
 
     def __str__(self):

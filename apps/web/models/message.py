@@ -24,6 +24,7 @@ class PhotoSize(TimeStampModel):
         verbose_name=_('From message'),
         blank=True,
         null=True,
+        on_delete=models.CASCADE,
     )
 
 
@@ -42,13 +43,15 @@ class Message(TimeStampModel):
         null=True,
         blank=True,
         related_name='forwarded_messages',
-        verbose_name=_('Sender of the original message')
+        verbose_name=_('Sender of the original message'),
+        on_delete=models.CASCADE,
     )
     from_user = models.ForeignKey(
         to=settings.AUTH_USER_MODEL,
         related_name='messages',
         verbose_name='From User',
         help_text=_('Retrieved user from'),
+        on_delete=models.CASCADE,
     )
     chat = models.ForeignKey(
         to='Chat',
@@ -57,6 +60,7 @@ class Message(TimeStampModel):
         help_text='Retrieved from Telegram API chat id',
         null=True,
         blank=True,
+        on_delete=models.CASCADE,
     )
     text = models.TextField(
         max_length=2500,

@@ -57,6 +57,8 @@ class NumericStringParser(object):
         self.opn = {
             "+": operator.add,
             "*": operator.mul,
+            "-": operator.sub,
+            "/": operator.truediv,
         }
         self.fn = {
             "!": (lambda x: not x),
@@ -67,7 +69,7 @@ class NumericStringParser(object):
         op = s.pop()
         if op == 'unary -':
             return -self.evaluateStack(s)
-        if op in "+*":
+        if op in "+*-/":
             op2 = self.evaluateStack(s)
             op1 = self.evaluateStack(s)
             return self.opn[op](op1, op2)

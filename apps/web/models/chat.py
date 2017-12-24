@@ -59,6 +59,13 @@ class Chat(TimeStampModel):
         verbose_name=_('Chat menu'),
         help_text=_('Chat menu, is used to inherit markup keyboard styles')
     )
+    _current_keyboard = models.TextField(
+        max_length=1000,
+        help_text=_('Is used to define available command from keyboard'),
+        editable=False,
+        null=True,
+        blank=True,
+    )
 
     class Meta:
         verbose_name = _('Chat')

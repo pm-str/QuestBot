@@ -16,6 +16,7 @@ class AppUser(AbstractUser):
         verbose_name="User's level",
         blank=True,
         null=True,
+        on_delete=models.CASCADE,
     )
     language_code = models.CharField(
         max_length=10,

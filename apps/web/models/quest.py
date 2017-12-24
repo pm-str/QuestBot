@@ -16,6 +16,7 @@ class Quest(TimeStampModel):
         verbose_name=_('Connected bot'),
         null=True,
         blank=True,
+        on_delete=models.CASCADE,
     )
 
     def __str__(self):

@@ -8,6 +8,7 @@ from .abstract import TimeStampModel
 
 FULL_COINCIDENCE = 'full_coincidence'
 TO_BE_IN = 'to_be_in'
+CONTAINS = 'contains'
 STARTS_WITH = 'starts_with'
 ENDS_WITH = 'ends_with'
 MATCH_REGEX = 'match_regex'
@@ -18,9 +19,11 @@ CONTAIN_A_VIDEO = 'contain_a_video'
 RECEIVED_BEFORE = 'received_before'
 RECEIVED_AFTER = 'received_after'
 
+
 RULE_CHOICES = (
     (FULL_COINCIDENCE, _('Full coincidence')),
     (TO_BE_IN, _('To be in')),
+    (CONTAINS, _('Contains')),
     (STARTS_WITH, _('Starts with')),
     (ENDS_WITH, _('Ends with')),
     (MATCH_REGEX, _('Match regex')),
@@ -32,18 +35,6 @@ RULE_CHOICES = (
     (RECEIVED_AFTER, _('Received after')),
 )
 
-ANY_MESSAGE = 'any_message'
-MESSAGE_TEXT = 'message_text'
-CALLBACK_MESSAGE_TEXT = 'callback_message_text'
-CALLBACK_DATA = 'callback data'
-
-FIELD_CHOICES = (
-    (ANY_MESSAGE, _('Any message')),
-    (MESSAGE_TEXT, _('Message text')),
-    (CALLBACK_MESSAGE_TEXT, _('Callback message text')),
-    (CALLBACK_DATA, _('Callback command')),
-)
-
 
 class Condition(TimeStampModel):
     value = models.CharField(verbose_name='Answer or pattern', max_length=1000)
@@ -53,24 +44,18 @@ class Condition(TimeStampModel):
         choices=RULE_CHOICES,
         default=FULL_COINCIDENCE,
     )
-    matched_field = models.CharField(
-        verbose_name='Matched field',
-        max_length=255,
-        choices=FIELD_CHOICES,
-        default=ANY_MESSAGE,
-    )
     handler = models.ForeignKey(
         to='Handler',
         verbose_name='Attached to handler',
         related_name='conditions',
+        on_delete=models.CASCADE,
     )
 
     def __str__(self):
         return f'{self.rule}'
 
-    def is_match_to_rule(self, update: Update):
+    def is_match_to_rule(self, update: Update, msg=''):
         """Check if update object match to the specified rule"""
-        msg = ''
 
         cb = update.callback_query
         mg = update.message
@@ -84,17 +69,22 @@ class Condition(TimeStampModel):
         elif self.matched_field == CALLBACK_DATA and cb:
             msg = update.callback_query.data
 
-        msg_text = msg.strip()
+        msg = msg or ''
 
-        if self.rule == FULL_COINCIDENCE:
+        msg_text = msg.strip().lower()
+        rule = self.rule.lower()
+
+        if rule == FULL_COINCIDENCE:
             return msg_text == self.value
-        elif self.rule == TO_BE_IN:
+        elif rule == TO_BE_IN:
             return msg_text in self.value
-        elif self.rule == STARTS_WITH:
+        elif rule == CONTAINS:
+            return self.value in msg_text
+        elif rule == STARTS_WITH:
             return msg_text.startswith(self.value)
-        elif self.rule == ENDS_WITH:
+        elif rule == ENDS_WITH:
             return msg_text.endswith(self.value)
-        elif self.rule == MATCH_REGEX:
+        elif rule == MATCH_REGEX:
             return bool(re.match(self.value, msg_text))
-        elif self.rule == CONTAIN_AN_IMAGE:
-            return msg.images.count()
+        elif rule == CONTAIN_AN_IMAGE:
+            return update.get_message.photos.count()

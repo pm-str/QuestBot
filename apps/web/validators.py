@@ -46,13 +46,13 @@ def username_list(value: str):
 
 
 def validate_conditions(value: str):
-    if re.match('^({\d+}[*+!()])*{\d+}$', value):
+    if re.match('^({\d*}\s*[*+!()]\s*)*{\d*}\s*$', value):
         return
 
     ex = value
 
     nsp = NumericStringParser()
-    result = re.sub('{\d+}', '1', ex)
+    result = re.sub('{\d*}', '1', ex)
     try:
         nsp.eval(result)
     except BaseException as ex:

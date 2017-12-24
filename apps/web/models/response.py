@@ -12,7 +12,8 @@ from apps.web.models.message import Message
 from apps.web.models.bot import Bot
 from apps.web.models.chat import Chat
 from apps.web.querysets import ResponseQuerySet
-from apps.web.utils import jinja2_extensions, jinja2_template_context
+from apps.web.utils import jinja2_extensions, jinja2_template_context, \
+    clear_redundant_tags
 from apps.web.validators import username_list, jinja2_template
 
 from .abstract import TimeStampModel
@@ -66,6 +67,7 @@ class Response(TimeStampModel):
         related_name='responses',
         blank=True,
         null=True,
+        on_delete=models.CASCADE,
     )
     redirect_to = models.CharField(
         verbose_name=_('Redirect to'),
@@ -80,7 +82,7 @@ class Response(TimeStampModel):
     )
 
     def __str__(self):
-        return self.title
+        return ' | '.join([str(self.handler.step.number), self.title])
 
     def _create_keyboard_button(self, element):
         if isinstance(element, tuple):
@@ -105,7 +107,7 @@ class Response(TimeStampModel):
         keyboard_template = env.from_string(keyboard)
         keyboard = keyboard_template.render(jinja2_template_context())
 
-        message_template = env.from_string(message)
+        message_template = env.from_string(clear_redundant_tags(message))
         message = message_template.render(jinja2_template_context())
 
         return message, keyboard

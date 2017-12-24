@@ -1,5 +1,5 @@
 import time
-from datetime import datetime
+from django.utils import timezone
 
 from django.conf import settings
 
@@ -49,11 +49,11 @@ class AppUserModelSerializer(serializers.ModelSerializer):
 
 
 class TimeStampField(serializers.Field):
-    def to_representation(self, value: datetime):
+    def to_representation(self, value: timezone):
         return time.mktime(value.timetuple())
 
     def to_internal_value(self, data: int):
-        return datetime.fromtimestamp(data)
+        return timezone.datetime.fromtimestamp(data)
 
 
 class PhotoSizeSerializer(serializers.ModelSerializer):

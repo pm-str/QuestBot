@@ -5,7 +5,11 @@ from .abstract import TimeStampModel
 
 
 class Update(TimeStampModel):
-    bot = models.ForeignKey(to='Bot', verbose_name=_('Bot from'))
+    bot = models.ForeignKey(
+        to='Bot',
+        verbose_name=_('Bot from'),
+        on_delete=models.CASCADE,
+    )
     update_id = models.BigIntegerField(
         verbose_name=_('Update Id'),
         db_index=True,
@@ -17,6 +21,7 @@ class Update(TimeStampModel):
         help_text=_('Update action for particular massage'),
         null=True,
         blank=True,
+        on_delete=models.CASCADE,
     )
     callback_query = models.ForeignKey(
         to='CallbackQuery',
@@ -24,6 +29,7 @@ class Update(TimeStampModel):
         verbose_name=_('Callback Query'),
         null=True,
         blank=True,
+        on_delete=models.CASCADE,
     )
     handler = models.ForeignKey(
         to='Handler',
@@ -32,6 +38,7 @@ class Update(TimeStampModel):
         help_text=_('Handler contains expression needed to process a message'),
         blank=True,
         null=True,
+        on_delete=models.CASCADE,
     )
     response = models.ForeignKey(
         to='Response',
@@ -40,6 +47,7 @@ class Update(TimeStampModel):
         help_text=_('Response that contain this message'),
         blank=True,
         null=True,
+        on_delete=models.CASCADE,
     )
 
     class Meta:

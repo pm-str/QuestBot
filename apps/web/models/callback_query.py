@@ -15,6 +15,7 @@ class CallbackQuery(TimeStampModel):
         related_name='callback_queries',
         null=True,
         blank=True,
+        on_delete=models.CASCADE,
     )
     message = models.ForeignKey(
         to='Message',
@@ -23,6 +24,7 @@ class CallbackQuery(TimeStampModel):
         help_text=_(
             'Message with the callback button that originated the query.'
         ),
+        on_delete=models.CASCADE,
     )
     data = models.TextField(
         max_length=1000,
