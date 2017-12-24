@@ -74,4 +74,4 @@ class Message(TimeStampModel):
         verbose_name_plural = _('Messages')
 
     def __str__(self):
-        return str(self.message_id)
+        return f'{self.message_id}'

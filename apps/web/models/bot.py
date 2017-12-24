@@ -31,7 +31,7 @@ class BotDescriptor(object):
 
 
 class Bot(TimeStampModel):
-    _bot = None
+    _bot: TelegramBot = None
     bot: TelegramBot = BotDescriptor()
     id = models.UUIDField(
         primary_key=True,

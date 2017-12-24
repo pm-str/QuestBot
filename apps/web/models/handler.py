@@ -2,17 +2,17 @@ import re
 
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
-from multiselectfield import MultiSelectField
 
 from apps.web.conditions_parsing import NumericStringParser
+from apps.web.models.constants import HookActions
 from apps.web.models.update import Update
 from apps.web.validators import validate_conditions
 from .abstract import TimeStampModel
 
 
-BUTTON_CLICK = 'button_click'
-COMMON_MESSAGE = 'common_message'
-CALLBACK_MESSAGE = 'callback_message'
+BUTTON_CLICK = HookActions.BUTTON_CLICK
+COMMON_MESSAGE = HookActions.COMMON_MESSAGE
+CALLBACK_MESSAGE = HookActions.CALLBACK_MESSAGE
 
 FIELD_CHOICES = (
     (BUTTON_CLICK, _('Button click')),
@@ -28,7 +28,7 @@ class Handler(TimeStampModel):
         related_name='handlers',
         on_delete=models.CASCADE,
     )
-    enabled_on = MultiSelectField(
+    enabled_on = models.CharField(
         verbose_name=_('Enabled on'),
         help_text=_('Enabled only on following requests'),
         max_length=255,

@@ -67,6 +67,7 @@ class ChatAdmin(admin.ModelAdmin):
         models.TextField: {'widget': CKEditorWidget}
     }
     list_display = ('id', 'type', 'title',)
+    readonly_fields = ('current_keyboard',)
 
 
 @admin.register(CallbackQuery)

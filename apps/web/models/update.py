@@ -1,6 +1,7 @@
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
+from apps.web.models.constants import HookActions
 from .abstract import TimeStampModel
 
 
@@ -55,7 +56,7 @@ class Update(TimeStampModel):
         verbose_name_plural = _('Updates')
 
     def __str__(self):
-        return self.id
+        return f'{self.id}'
 
     @property
     def get_message(self):
@@ -72,3 +73,22 @@ class Update(TimeStampModel):
         if self.callback_query:
             return self.callback_query.from_user
         raise AttributeError
+
+    @property
+    def is_button_click(self):
+        message = self.get_message
+        keyboard = message.chat.current_keyboard
+
+        if keyboard and (f'\'{message.text}\'' in keyboard):
+            return True
+        else:
+            return False
+
+    @property
+    def action_type(self):
+        if self.is_button_click:
+            return HookActions.BUTTON_CLICK
+        if self.message:
+            return HookActions.COMMON_MESSAGE
+        if self.callback_query:
+            return HookActions.CALLBACK_MESSAGE

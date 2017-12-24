@@ -14,5 +14,4 @@ typing==3.6.2
 django-celery-results==1.0.1
 Pillow
 flake8
-django-multiselectfield
 billiard

@@ -37,4 +37,4 @@ class CallbackQuery(TimeStampModel):
         verbose_name_plural = _('Callback queries')
 
     def __str__(self):
-        return self.id
+        return f'{self.id}'

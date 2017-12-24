@@ -73,4 +73,4 @@ class Chat(TimeStampModel):
 
     def __str__(self):
         """Represent chat name"""
-        return str(self.id)
+        return f'{self.id}'

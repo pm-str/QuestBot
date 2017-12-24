@@ -16,8 +16,7 @@ def handle_message(update: Update):
         bot.quest.initialize_user(user)
 
     step = user.step
-    # handlers = step.handlers.filter(allowed=user)
-    handlers = step.handlers.all()
+    handlers = step.handlers.filter(enabled_on=update.action_type)
 
     for handler in handlers:
         is_true = handler.check_handler_conditions(update)
