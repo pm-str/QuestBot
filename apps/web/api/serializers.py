@@ -26,6 +26,7 @@ class ChatModelSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Chat
+        fields = '__all__'
 
 
 class AppUserModelSerializer(serializers.ModelSerializer):
@@ -109,7 +110,7 @@ class CallbackQueryModelSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CallbackQuery
-        field = (
+        fields = (
             'id',
             'message',
             'data',

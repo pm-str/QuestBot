@@ -126,8 +126,13 @@ class Response(TimeStampModel):
 
         if self.delete_previous_keyboard:
             keyboard = {'hide_keyboard': True}
+            chat.current_keyboard = None
         else:
             keyboard = self.build_keyboard(keyboard, self.one_time_keyboard)
+            chat.current_keyboard = keyboard
+
+        # updates chat after keyboard changing
+        chat.save()
 
         bot.send_message(
             chat_id=chat.id,

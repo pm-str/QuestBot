@@ -2,6 +2,7 @@ import re
 
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
+from multiselectfield import MultiSelectField
 
 from apps.web.conditions_parsing import NumericStringParser
 from apps.web.models.update import Update
@@ -9,16 +10,14 @@ from apps.web.validators import validate_conditions
 from .abstract import TimeStampModel
 
 
-BUTTON_TEXT = 'button_text'
-MESSAGE_TEXT = 'message_text'
-CALLBACK_MESSAGE_TEXT = 'callback_message_text'
-CALLBACK_DATA = 'callback data'
+BUTTON_CLICK = 'button_click'
+COMMON_MESSAGE = 'common_message'
+CALLBACK_MESSAGE = 'callback_message'
 
 FIELD_CHOICES = (
-    (BUTTON_TEXT, _('Button text')),
-    (MESSAGE_TEXT, _('Message text')),
-    (CALLBACK_MESSAGE_TEXT, _('Callback message text')),
-    (CALLBACK_DATA, _('Callback command')),
+    (BUTTON_CLICK, _('Button click')),
+    (COMMON_MESSAGE, _('Common message')),
+    (CALLBACK_MESSAGE, _('Callback message')),
 )
 
 
@@ -29,12 +28,12 @@ class Handler(TimeStampModel):
         related_name='handlers',
         on_delete=models.CASCADE,
     )
-    enabled_on = SelectMultipleField(
+    enabled_on = MultiSelectField(
         verbose_name=_('Enabled on'),
         help_text=_('Enabled only on following requests'),
         max_length=255,
         choices=FIELD_CHOICES,
-        default=BUTTON_TEXT,
+        default=BUTTON_CLICK,
     )
     ids_expression = models.CharField(
         max_length=500,

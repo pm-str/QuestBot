@@ -35,6 +35,18 @@ RULE_CHOICES = (
     (RECEIVED_AFTER, _('Received after')),
 )
 
+ANY_MESSAGE = 'any_message'
+MESSAGE_TEXT = 'message_text'
+CALLBACK_MESSAGE_TEXT = 'callback_message_text'
+CALLBACK_DATA = 'callback data'
+
+FIELD_CHOICES = (
+    (ANY_MESSAGE, _('Any message')),
+    (MESSAGE_TEXT, _('Message text')),
+    (CALLBACK_MESSAGE_TEXT, _('Callback message text')),
+    (CALLBACK_DATA, _('Callback command')),
+)
+
 
 class Condition(TimeStampModel):
     value = models.CharField(verbose_name='Answer or pattern', max_length=1000)
@@ -43,6 +55,12 @@ class Condition(TimeStampModel):
         max_length=255,
         choices=RULE_CHOICES,
         default=FULL_COINCIDENCE,
+    )
+    matched_field = models.CharField(
+        verbose_name='Matched field',
+        max_length=255,
+        choices=FIELD_CHOICES,
+        default=ANY_MESSAGE,
     )
     handler = models.ForeignKey(
         to='Handler',
@@ -61,7 +79,7 @@ class Condition(TimeStampModel):
         mg = update.message
 
         if self.matched_field == ANY_MESSAGE:
-            msg = update.get_message.text
+            msg = update.get_message.text or update.callback_query.data
         elif self.matched_field == MESSAGE_TEXT and mg:
             msg = update.message.text
         elif self.matched_field == CALLBACK_MESSAGE_TEXT and cb:
