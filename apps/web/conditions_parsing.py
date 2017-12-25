@@ -1,9 +1,18 @@
-from pyparsing import (
-    Literal, CaselessLiteral, Word, Combine, Group,
-    Optional,
-    ZeroOrMore, Forward, nums, alphas, oneOf
-)
 import operator
+
+from pyparsing import (
+    CaselessLiteral,
+    Combine,
+    Forward,
+    Group,
+    Literal,
+    Optional,
+    Word,
+    ZeroOrMore,
+    alphas,
+    nums,
+    oneOf,
+)
 
 
 class NumericStringParser(object):

@@ -7,7 +7,7 @@ from apps.web.models import AppUser, CallbackQuery, Chat, Message, Update
 from apps.web.models.message import PhotoSize
 from apps.web.utils import allowed_hooks
 
-from ..tasks import handle_message
+from ..tasks import handle_message_task
 
 
 class ProcessWebHookAPIView(CreateAPIView):
@@ -32,8 +32,7 @@ class ProcessWebHookAPIView(CreateAPIView):
         update = self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
 
-        handle_message(update)
-        # handle_message.delay(update)
+        handle_message_task.delay(update.id)
 
         return Response(
             serializer.data,

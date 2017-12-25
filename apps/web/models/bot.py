@@ -12,7 +12,6 @@ from telegram.bot import Bot as TelegramBot
 from telegram.error import InvalidToken, TelegramError
 
 from apps.config import settings
-from apps.web.models.update import Update
 from apps.web.validators import validate_token
 
 from .abstract import TimeStampModel
@@ -31,7 +30,7 @@ class BotDescriptor(object):
 
 
 class Bot(TimeStampModel):
-    _bot: TelegramBot = None
+    _bot = None
     bot: TelegramBot = BotDescriptor()
     id = models.UUIDField(
         primary_key=True,
@@ -138,7 +137,7 @@ class Bot(TimeStampModel):
             chat_id,
             text,
             keyboard=None,
-            reply_message_id= None,
+            reply_message_id=None,
     ):
         disable_notification = getattr(config, settings.TELEGRAM_NO_NOTIFY)
         parse_mode = getattr(config, settings.TELEGRAM_PARSE_MODE)

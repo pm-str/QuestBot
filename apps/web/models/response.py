@@ -2,20 +2,22 @@ import ast
 
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
-from jinja2 import Environment
-from telegram import (
-    KeyboardButton,
-    ReplyKeyboardMarkup,
-)
 
-from apps.web.models.message import Message
+from jinja2 import Environment
+from telegram import KeyboardButton, ReplyKeyboardMarkup
+
 from apps.web.models.bot import Bot
 from apps.web.models.chat import Chat
+from apps.web.models.message import Message
 from apps.web.querysets import ResponseQuerySet
-from apps.web.utils import jinja2_extensions, jinja2_template_context, \
-    clear_redundant_tags
-from apps.web.validators import username_list, jinja2_template
+from apps.web.utils import (
+    clear_redundant_tags,
+    jinja2_extensions,
+    jinja2_template_context,
+)
+from apps.web.validators import jinja2_template, username_list
 
+from apps.web.tasks import send_message_task
 from .abstract import TimeStampModel
 
 
@@ -112,7 +114,7 @@ class Response(TimeStampModel):
 
         return message, keyboard
 
-    def send_message(self, bot: Bot, chat: Chat, message: Message):
+    def send_response(self, bot: Bot, chat: Chat, message: Message, eta=None):
         """Method responsible for answer and and related actions"""
 
         text, keyboard = self.render_layout(self.text, self.keyboard)
@@ -133,18 +135,21 @@ class Response(TimeStampModel):
 
         # updates chat after keyboard changing
         chat.save()
-
-        bot.send_message(
-            chat_id=chat.id,
-            reply_message_id=(
-                message.message_id if self.as_reply else None
+        send_message_task.apply_async(
+            (bot.id,),
+            dict(
+                chat_id=chat.id,
+                reply_message_id=(
+                    message.message_id if self.as_reply else None
+                ),
+                keyboard=keyboard,
+                text=text,
             ),
-            keyboard=keyboard,
-            text=text,
+            eta=eta,
         )
 
         for username in self.redirect_to.split(' '):
             chat = Chat.objects.filter(username=username).first()
 
             if chat:
-                bot.send_message(chat_id=chat.id, text=self.text)
+                send_message_task(bot.id, chat_id=chat.id, text=message.text)

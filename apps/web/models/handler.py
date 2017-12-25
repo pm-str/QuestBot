@@ -7,8 +7,8 @@ from apps.web.conditions_parsing import NumericStringParser
 from apps.web.models.constants import HookActions
 from apps.web.models.update import Update
 from apps.web.validators import validate_conditions
-from .abstract import TimeStampModel
 
+from .abstract import TimeStampModel
 
 BUTTON_CLICK = HookActions.BUTTON_CLICK
 COMMON_MESSAGE = HookActions.COMMON_MESSAGE

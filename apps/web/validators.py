@@ -1,7 +1,8 @@
 import re
 
-from django.utils.translation import ugettext_lazy as _
 from django.core.exceptions import ValidationError
+from django.utils.translation import ugettext_lazy as _
+
 from jinja2 import Environment, TemplateSyntaxError
 
 from apps.web.conditions_parsing import NumericStringParser

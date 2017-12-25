@@ -2,6 +2,7 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
 from apps.web.models.constants import HookActions
+
 from .abstract import TimeStampModel
 
 

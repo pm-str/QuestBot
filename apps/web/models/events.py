@@ -1,11 +1,10 @@
 from django.db import models
-from django.utils.translation import ugettext_lazy as _
 from django.utils import timezone
+from django.utils.translation import ugettext_lazy as _
 
 from telegram import TelegramError
 
 from .abstract import TimeStampModel
-
 
 NOT_STARTED = 'not_started'
 PENDING = 'pending'
@@ -65,10 +64,11 @@ class Event(TimeStampModel):
         if self.status == NOT_STARTED:
             try:
                 self.status = PENDING
-                self.response.send_message(
+                self.response.send_response(
                     bot=self.bot,
                     chat=self.chat,
                     message=self.message,
+                    eta=self.send_date,
                 )
             except TelegramError:
                 self.status = FAILED

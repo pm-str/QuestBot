@@ -2,11 +2,14 @@ from __future__ import absolute_import, unicode_literals
 
 from celery import shared_task
 
-from apps.web.models import AppUser, Bot, Update
+from apps.web.models.user import AppUser
+from apps.web.models.bot import Bot
+from apps.web.models.update import Update
 
 
 @shared_task
-def handle_message(update: Update):
+def handle_message_task(update_id: int):
+    update = Update.objects.get(id=update_id)
     bot: Bot = update.bot
     user: AppUser = update.get_sender
     chat = update.get_message.chat
@@ -31,5 +34,13 @@ def handle_message(update: Update):
             user.step = next_step
             user.save()
 
-        responses.send_message(bot, chat, message)
+        responses.send_response(bot, chat, message)
 
+
+@shared_task
+def send_message_task(bot_id, *args, **kwargs):
+    """Proxy method wrapped by celery tasks"""
+
+    bot = Bot.objects.get(id=bot_id)
+    print(bot_id, args, kwargs)
+    bot.send_message(*args, **kwargs)

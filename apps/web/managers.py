@@ -9,5 +9,5 @@ class ResponseManager(Manager):
     def get_queryset(self):
         return ResponseQuerySet(model=self, using=self._db)
 
-    def send_message(self, bot, update):
-        self.get_queryset().order_by('priority').send_message(bot, update)
+    def send_response(self, bot, update):
+        self.get_queryset().order_by('priority').send_response(bot, update)

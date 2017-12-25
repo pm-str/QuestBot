@@ -1,9 +1,12 @@
 import re
+from datetime import datetime
 
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
+from apps.web.models.constants import DATE_TIME_FORMAT
 from apps.web.models.update import Update
+
 from .abstract import TimeStampModel
 
 FULL_COINCIDENCE = 'full_coincidence'
@@ -106,3 +109,13 @@ class Condition(TimeStampModel):
             return bool(re.match(self.value, msg_text))
         elif rule == CONTAIN_AN_IMAGE:
             return update.get_message.photos.count()
+        elif rule in [RECEIVED_AFTER, RECEIVED_BEFORE]:
+            try:
+                dt = datetime.strptime(self.value, DATE_TIME_FORMAT)
+            except ValueError:
+                return False
+
+            if rule == RECEIVED_BEFORE:
+                return update.modified < dt
+            elif rule == RECEIVED_AFTER:
+                return update.modified > dt
