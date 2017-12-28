@@ -8,7 +8,7 @@ from rest_framework import serializers
 from constance import config
 
 from apps.web.models import AppUser, Bot, CallbackQuery, Chat, Message, Update
-from apps.web.models.message import PhotoSize
+from apps.web.models.message import Photo
 
 
 class TelegramBot(object):
@@ -57,11 +57,11 @@ class TimeStampField(serializers.Field):
         return timezone.datetime.fromtimestamp(data)
 
 
-class PhotoSizeSerializer(serializers.ModelSerializer):
+class PhotoSerializer(serializers.ModelSerializer):
     message = serializers.HiddenField(default=None, read_only=False)
 
     class Meta:
-        model = PhotoSize
+        model = Photo
         fields = '__all__'
 
 
@@ -81,7 +81,7 @@ class MessageModelSerializer(serializers.ModelSerializer):
     )
     date = TimeStampField()
     chat = ChatModelSerializer()
-    photo = PhotoSizeSerializer(
+    photo = PhotoSerializer(
         many=True,
         required=False,
     )

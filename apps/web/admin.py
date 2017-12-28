@@ -16,17 +16,33 @@ class ResponseInline(admin.TabularInline):
     readonly_fields = ('id',)
 
 
-class PhotoSizeInline(admin.TabularInline):
-    model = PhotoSize
+class PhotoInline(admin.TabularInline):
+    model = Photo
     readonly_fields = ('url',)
     fields = ('url', 'height', 'width', 'file_size',)
 
-    def url(self, obj):
-        return obj.message.updates.first().bot.get_file(
-            obj.file_id)['file_path']
-
     def has_add_permission(self, request):
         return False
+
+
+@admin.register(Photo)
+class PhotoAdmin(admin.ModelAdmin):
+    model = Photo
+    list_display = ('id', 'message', 'get_file_size', 'width', 'height')
+
+    fields = ('file_id', 'message', 'width', 'height', 'file_size', 'url')
+
+    readonly_fields = ('url', 'file_id',)
+
+    def get_file_size(self, obj):
+        labels = [
+            ('Bytes', 1), ('Kb', 1024), ('Mb', 1024**2), ('Gb', 1024**3),
+        ]
+        i = 0
+        while obj.file_size > labels[i+1][1] and i+1 < len(labels):
+            i += 1
+
+        return f'{int(obj.file_size / labels[i][1])} {labels[i][0]}'
 
 
 class HandlerInline(admin.TabularInline):
@@ -40,7 +56,7 @@ class HandlerInline(admin.TabularInline):
 class ConditionInline(admin.TabularInline):
     model = Condition
     readonly_fields = ('id',)
-    fields = ('id', 'value', 'rule',)
+    fields = ('id', 'value', 'matched_field', 'rule',)
 
 
 @admin.register(Bot)
@@ -53,7 +69,8 @@ class BotAdmin(admin.ModelAdmin):
 class MessageAdmin(admin.ModelAdmin):
     list_display = ('message_id', 'from_user', 'date',)
     list_filter = ('from_user', 'chat',)
-    inlines = (PhotoSizeInline, )
+    inlines = (PhotoInline, )
+
 
 @admin.register(Update)
 class UpdateAdmin(admin.ModelAdmin):
@@ -136,6 +153,8 @@ class HandlerAdmin(admin.ModelAdmin):
         }),
     )
 
+    ordering = ('step',)
+
 
 @admin.register(Response)
 class ResponseAdmin(admin.ModelAdmin):
@@ -144,7 +163,7 @@ class ResponseAdmin(admin.ModelAdmin):
     }
     list_filter = ('handler__step', 'handler')
     list_display = ('title', 'on_true', 'step_number', 'redirect_to', )
-    ordering = ('handler__step', )
+    ordering = ('handler__step', 'created',)
 
     def step_number(self, obj):
         return obj.handler.step.number

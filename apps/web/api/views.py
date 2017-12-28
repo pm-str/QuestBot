@@ -4,7 +4,7 @@ from rest_framework.response import Response
 
 from apps.web.api.serializers import UpdateModelSerializer
 from apps.web.models import AppUser, CallbackQuery, Chat, Message, Update
-from apps.web.models.message import PhotoSize
+from apps.web.models.message import Photo
 from apps.web.utils import allowed_hooks
 
 from ..tasks import handle_message_task
@@ -28,11 +28,19 @@ class ProcessWebHookAPIView(CreateAPIView):
         self.request.data['hook_id'] = bot_id
 
         serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        update = self.perform_create(serializer)
+        is_valid = serializer.is_valid()
+
+        if is_valid:
+            update = self.perform_create(serializer)
+        else:
+            # TODO: implement errors handling
+            return Response(status=status.HTTP_204_NO_CONTENT)
+
         headers = self.get_success_headers(serializer.data)
 
-        handle_message_task.delay(update.id)
+        # handle_message_task.delay(update.id)
+
+        handle_message_task(update.id)
 
         return Response(
             serializer.data,
@@ -84,7 +92,7 @@ class ProcessWebHookAPIView(CreateAPIView):
         photos = data.get('photo', [])
         for photo in photos:
             photo.pop('message', None)
-            PhotoSize.objects.create(**photo, message=message)
+            Photo.objects.get_or_create(**photo, message=message)
 
     def handle_callback(self, data):
         bot = data['bot']

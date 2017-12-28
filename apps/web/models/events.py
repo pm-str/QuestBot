@@ -4,6 +4,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from telegram import TelegramError
 
+from apps.web.models.user import AppUser
 from .abstract import TimeStampModel
 
 NOT_STARTED = 'not_started'
@@ -36,7 +37,7 @@ class Event(TimeStampModel):
     )
     send_date = models.DateTimeField(
         verbose_name='Time to send on',
-        default=timezone.now(),
+        default=timezone.now,
     )
     status = models.CharField(
         max_length=20,
@@ -56,11 +57,23 @@ class Event(TimeStampModel):
         null=True,
         on_delete=models.CASCADE,
     )
+    move_user_to = models.ForeignKey(
+        to='Step',
+        verbose_name=_('Mover user to step'),
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+    )
 
     def __str__(self):
         return self.name
 
     def save(self, *args, **kwargs):
+        if self.move_user_to:
+            AppUser.objects.filter(username=self.chat.username).update(
+                step=self.move_user_to,
+            )
+
         if self.status == NOT_STARTED:
             try:
                 self.status = PENDING

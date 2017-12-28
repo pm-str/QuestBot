@@ -82,7 +82,7 @@ class Condition(TimeStampModel):
         mg = update.message
 
         if self.matched_field == ANY_MESSAGE:
-            msg = update.get_message.text or update.callback_query.data
+            msg = update.get_message.text
         elif self.matched_field == MESSAGE_TEXT and mg:
             msg = update.message.text
         elif self.matched_field == CALLBACK_MESSAGE_TEXT and cb:
@@ -93,29 +93,29 @@ class Condition(TimeStampModel):
         msg = msg or ''
 
         msg_text = msg.strip().lower()
-        rule = self.rule.lower()
+        value = self.value.lower()
 
-        if rule == FULL_COINCIDENCE:
-            return msg_text == self.value
-        elif rule == TO_BE_IN:
-            return msg_text in self.value
-        elif rule == CONTAINS:
+        if self.rule == FULL_COINCIDENCE:
+            return msg_text == value
+        elif self.rule == TO_BE_IN:
+            return msg_text in value
+        elif self.rule == CONTAINS:
             return self.value in msg_text
-        elif rule == STARTS_WITH:
-            return msg_text.startswith(self.value)
-        elif rule == ENDS_WITH:
-            return msg_text.endswith(self.value)
-        elif rule == MATCH_REGEX:
-            return bool(re.match(self.value, msg_text))
-        elif rule == CONTAIN_AN_IMAGE:
+        elif self.rule == STARTS_WITH:
+            return msg_text.startswith(value)
+        elif self.rule == ENDS_WITH:
+            return msg_text.endswith(value)
+        elif self.rule == MATCH_REGEX:
+            return bool(re.match(value, msg_text))
+        elif self.rule == CONTAIN_AN_IMAGE:
             return update.get_message.photos.count()
-        elif rule in [RECEIVED_AFTER, RECEIVED_BEFORE]:
+        elif self.rule in [RECEIVED_AFTER, RECEIVED_BEFORE]:
             try:
-                dt = datetime.strptime(self.value, DATE_TIME_FORMAT)
+                dt = datetime.strptime(value, DATE_TIME_FORMAT)
             except ValueError:
                 return False
 
-            if rule == RECEIVED_BEFORE:
+            if self.rule == RECEIVED_BEFORE:
                 return update.modified < dt
-            elif rule == RECEIVED_AFTER:
+            elif self.rule == RECEIVED_AFTER:
                 return update.modified > dt

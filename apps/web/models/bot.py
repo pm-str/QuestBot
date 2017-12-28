@@ -162,12 +162,9 @@ class Bot(TimeStampModel):
                     disable_notification=disable_notification,
                     reply_message_id=reply_message_id,
                     reply_markup=keyboard,
+                    timeout=5000,
                 )
-            except TelegramError as r:
+            except TelegramError as error:
                 logger.error("""Error on message send has been occurred. chat:
-                {}, text: {}, parse_mode: {}, no_links: {}, no_notify: {},
-                reply_message: {}, markup: {},
-                """.format(
-                    chat_id, msg[0], parse_mode, disable_web_page_preview,
-                    disable_notification, reply_message_id, msg[1],
-                ))
+                {}, text: {}, reply_message: {}, markup: {}, error: {}
+                """.format(chat_id, msg, reply_message_id, keyboard, error))

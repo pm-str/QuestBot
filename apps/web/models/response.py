@@ -96,10 +96,11 @@ class Response(TimeStampModel):
         if keyboard:
             # since jinja2 template represents for list of buttons
             # it should be converted into python object via ast library
-            built_keyboard = ReplyKeyboardMarkup(
-                list(ast.literal_eval(keyboard)),
+            built_keyboard = dict(
+                keyboard=list(ast.literal_eval(keyboard)),
                 one_time_keyboard=one_time_keyboard,
                 resize_keyboard=True,
+                selective=False,
             )
         return built_keyboard
 
@@ -140,7 +141,7 @@ class Response(TimeStampModel):
             dict(
                 chat_id=chat.id,
                 reply_message_id=(
-                    message.message_id if self.as_reply else None
+                    message.message_id if message and self.as_reply else None
                 ),
                 keyboard=keyboard,
                 text=text,

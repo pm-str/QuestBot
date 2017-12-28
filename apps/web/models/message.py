@@ -6,11 +6,9 @@ from apps.config import settings
 from .abstract import TimeStampModel
 
 
-class PhotoSize(TimeStampModel):
+class Photo(TimeStampModel):
     file_id = models.CharField(
         max_length=1000,
-        primary_key=True,
-        unique=True,
         db_index=True,
         help_text=_('Unique identifier for this file.'),
         verbose_name=_('File ID'),
@@ -26,6 +24,11 @@ class PhotoSize(TimeStampModel):
         null=True,
         on_delete=models.CASCADE,
     )
+
+    @property
+    def url(self):
+        return self.message.updates.first().bot.get_file(
+            self.file_id)['file_path']
 
 
 class Message(TimeStampModel):
