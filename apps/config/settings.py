@@ -36,8 +36,6 @@ INSTALLED_APPS = [
     'django_extensions',
     'ckeditor',
     'constance',
-    'multiselectfield',
-    # 'permabots',
 
     'apps.web'
 ]
