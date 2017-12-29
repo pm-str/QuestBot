@@ -84,7 +84,12 @@ class Response(TimeStampModel):
     )
 
     def __str__(self):
-        return ' | '.join([str(self.handler.step.number), self.title])
+        if self.handler:
+            step = str(self.handler.step.number)
+        else:
+            step = 'Undefined'
+
+        return ' | '.join([step, self.title])
 
     def _create_keyboard_button(self, element):
         if isinstance(element, tuple):
@@ -150,7 +155,16 @@ class Response(TimeStampModel):
         )
 
         for username in self.redirect_to.split(' '):
-            chat = Chat.objects.filter(username=username).first()
+            chat = Chat.objects.filter(username__iexact=username).first()
+
+            fmtd_text = """
+            Bot: {bot}\nChat: {chat}\nMessage ID: {message}\nText: {text}\n
+            """.format(
+                bot=bot,
+                chat=chat,
+                message=message.message_id if message else None,
+                text=message.text if message else None,
+            )
 
             if chat:
-                send_message_task(bot.id, chat_id=chat.id, text=message.text)
+                send_message_task(bot.id, chat_id=chat.id, text=fmtd_text)

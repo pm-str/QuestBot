@@ -76,7 +76,7 @@ class Update(TimeStampModel):
         raise AttributeError
 
     @property
-    def is_button_click(self):
+    def is_reply_button(self):
         message = self.get_message
         keyboard = message.chat.current_keyboard
 
@@ -87,9 +87,11 @@ class Update(TimeStampModel):
 
     @property
     def action_type(self):
-        if self.is_button_click:
-            return HookActions.BUTTON_CLICK
-        if self.message:
-            return HookActions.COMMON_MESSAGE
+        if self.is_reply_button:
+            return HookActions.REPLY_BUTTON
         if self.callback_query:
-            return HookActions.CALLBACK_MESSAGE
+            return HookActions.CALLBACK
+        if self.get_message.text and self.get_message.text.startswith('/'):
+            return HookActions.COMMAND
+        if self.message:
+            return HookActions.MESSAGE

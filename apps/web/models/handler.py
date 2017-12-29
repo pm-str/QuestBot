@@ -10,14 +10,16 @@ from apps.web.validators import validate_conditions
 
 from .abstract import TimeStampModel
 
-BUTTON_CLICK = HookActions.BUTTON_CLICK
-COMMON_MESSAGE = HookActions.COMMON_MESSAGE
-CALLBACK_MESSAGE = HookActions.CALLBACK_MESSAGE
+REPLY_BUTTON = HookActions.REPLY_BUTTON
+MESSAGE = HookActions.MESSAGE
+CALLBACK = HookActions.CALLBACK
+COMMAND = HookActions.COMMAND
 
 FIELD_CHOICES = (
-    (BUTTON_CLICK, _('Button click')),
-    (COMMON_MESSAGE, _('Common message')),
-    (CALLBACK_MESSAGE, _('Callback message')),
+    (REPLY_BUTTON, _('Reply button')),
+    (MESSAGE, _('Message')),
+    (COMMAND, _('Command')),
+    (CALLBACK, _('Callback')),
 )
 
 
@@ -33,7 +35,7 @@ class Handler(TimeStampModel):
         help_text=_('Enabled only on following requests'),
         max_length=255,
         choices=FIELD_CHOICES,
-        default=BUTTON_CLICK,
+        default=REPLY_BUTTON,
     )
     ids_expression = models.CharField(
         max_length=500,

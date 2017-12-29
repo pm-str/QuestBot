@@ -1,7 +1,8 @@
 class HookActions(object):
-    BUTTON_CLICK = 'button_click'
-    COMMON_MESSAGE = 'common_message'
-    CALLBACK_MESSAGE = 'callback_message'
+    REPLY_BUTTON = 'reply_button'
+    MESSAGE = 'message'
+    CALLBACK = 'callback'
+    COMMAND = 'command'
 
 
 DATE_TIME_FORMAT = '%d/%m/%y %H:%M'

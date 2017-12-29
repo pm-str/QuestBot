@@ -128,7 +128,7 @@ class HandlerAdmin(admin.ModelAdmin):
 
     list_display = ('title', 'step',)
 
-    list_filter = ('step',)
+    list_filter = ('step', 'enabled_on',)
 
     fieldsets = (
         (None, {
