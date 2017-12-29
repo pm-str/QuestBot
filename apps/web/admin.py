@@ -166,7 +166,7 @@ class ResponseAdmin(admin.ModelAdmin):
     ordering = ('handler__step', 'created',)
 
     def step_number(self, obj):
-        return obj.handler.step.number
+        return obj.handler.step.number if obj.handler else None
 
 
 @admin.register(Step)
