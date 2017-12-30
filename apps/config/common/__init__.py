@@ -1,2 +1,3 @@
 from .constance import *
-from .UI import *
+from .admin import *
+from .templates import *

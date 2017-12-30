@@ -12,7 +12,7 @@ from telegram.bot import Bot as TelegramBot
 from telegram.error import InvalidToken, TelegramError
 
 from apps.config import settings
-from apps.web.validators import validate_token
+from apps.web.validators import token_validator
 
 from .abstract import TimeStampModel
 
@@ -41,7 +41,7 @@ class Bot(TimeStampModel):
         max_length=1000,
         unique=True,
         verbose_name='Bot token',
-        validators=[validate_token],
+        validators=[token_validator],
     )
     name = models.CharField(max_length=250, verbose_name='Bot name')
     user_api = models.OneToOneField(
@@ -138,11 +138,10 @@ class Bot(TimeStampModel):
             text,
             keyboard=None,
             reply_message_id=None,
+            disable_notifications=False,
+            disable_links_preview=False,
     ):
-        disable_notification = getattr(config, settings.TELEGRAM_NO_NOTIFY)
         parse_mode = getattr(config, settings.TELEGRAM_PARSE_MODE)
-        disable_web_page_preview = getattr(config,
-                                           settings.TELEGRAM_NO_LINKS_PREVIEW)
 
         msg_texts = []
 
@@ -158,8 +157,8 @@ class Bot(TimeStampModel):
                     chat_id=chat_id,
                     text=msg,
                     parse_mode=parse_mode,
-                    disable_web_page_preview=disable_web_page_preview,
-                    disable_notification=disable_notification,
+                    disable_web_page_preview=disable_links_preview,
+                    disable_notification=disable_notifications,
                     reply_message_id=reply_message_id,
                     reply_markup=keyboard,
                     timeout=5000,

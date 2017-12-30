@@ -47,7 +47,6 @@ class PhotoAdmin(admin.ModelAdmin):
 
 class HandlerInline(admin.TabularInline):
     model = Handler
-    exclude = ('allowed',)
     readonly_fields = ('id', )
     fields = ('id', 'ids_expression', 'title',)
     fk_name = 'step'
@@ -80,10 +79,7 @@ class UpdateAdmin(admin.ModelAdmin):
 
 @admin.register(Chat)
 class ChatAdmin(admin.ModelAdmin):
-    formfield_overrides = {
-        models.TextField: {'widget': CKEditorWidget}
-    }
-    list_display = ('id', 'type', 'title',)
+    list_display = ('id', 'title', 'username', 'type',)
     readonly_fields = ('current_keyboard',)
 
 
@@ -128,7 +124,7 @@ class HandlerAdmin(admin.ModelAdmin):
 
     list_display = ('title', 'step',)
 
-    list_filter = ('step', 'enabled_on',)
+    list_filter = ('step', 'enabled_on', )
 
     fieldsets = (
         (None, {
@@ -145,12 +141,12 @@ class HandlerAdmin(admin.ModelAdmin):
                 'step_on_error',
             )
         }),
-        ('Permissions', {
-            'classes': ('collapse',),
+        ('Extra', {
+            # 'classes': ('collapse',),
             'fields': (
-                'allowed',
+                'redirects',
             )
-        }),
+        })
     )
 
     ordering = ('step',)
@@ -162,7 +158,7 @@ class ResponseAdmin(admin.ModelAdmin):
         models.TextField: {'widget': CKEditorWidget}
     }
     list_filter = ('handler__step', 'handler')
-    list_display = ('title', 'on_true', 'step_number', 'redirect_to', )
+    list_display = ('title', 'on_true', 'step_number',)
     ordering = ('handler__step', 'created',)
 
     def step_number(self, obj):

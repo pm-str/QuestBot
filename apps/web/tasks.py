@@ -27,6 +27,9 @@ def handle_message_task(update_id: int):
 
         if is_true:
             next_step = handler.step_on_success
+
+            # send received message to specified users
+            handler.redirect_message(bot, chat, message)
         else:
             next_step = handler.step_on_error
 

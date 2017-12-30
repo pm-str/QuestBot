@@ -6,7 +6,8 @@ from django.utils.translation import ugettext_lazy as _
 from apps.web.conditions_parsing import NumericStringParser
 from apps.web.models.constants import HookActions
 from apps.web.models.update import Update
-from apps.web.validators import validate_conditions
+from apps.web.tasks import send_message_task
+from apps.web.validators import condition_validator
 
 from .abstract import TimeStampModel
 
@@ -40,15 +41,11 @@ class Handler(TimeStampModel):
     ids_expression = models.CharField(
         max_length=500,
         verbose_name='Mathematics expression',
-        help_text=_("Allowed / +*()! /. A set of rules by condition's id"),
+        help_text=_("A set of math symbols to construct a particular rule,"
+                    "example: {} + {} > 1; example2: {cond_id} == 0"),
         null=True,
         blank=True,
-        validators=[validate_conditions]
-    )
-    allowed = models.ManyToManyField(
-        to='AppUser',
-        related_name='handlers',
-        blank=True,
+        validators=[condition_validator]
     )
     step_on_success = models.ForeignKey(
         to='Step',
@@ -69,6 +66,11 @@ class Handler(TimeStampModel):
         on_delete=models.CASCADE,
     )
     title = models.CharField(verbose_name="Handler title", max_length=255)
+    redirects = models.ManyToManyField(
+        to='AppUser',
+        verbose_name=_('Redirects'),
+        help_text=_('Users the message redirect to'),
+    )
 
     class Meta:
         verbose_name = _('Handler')
@@ -76,6 +78,22 @@ class Handler(TimeStampModel):
 
     def __str__(self):
         return ' | '.join([str(self.step.number), self.title, ])
+
+    def redirect_message(self, bot, chat, message):
+        for user in list(self.redirects.all()):
+            chat = chat.objects.filter(username__iexact=user.username).first()
+
+            fmtd_text = """
+            Bot: {bot}\nChat: {chat}\nMessage ID: {message}\nText: {text}\n
+            """.format(
+                bot=bot,
+                chat=chat,
+                message=message.message_id if message else None,
+                text=message.text if message else None,
+            )
+
+            if chat:
+                send_message_task(bot.id, chat_id=chat.id, text=fmtd_text)
 
     def check_handler_conditions(
             self,
@@ -118,4 +136,4 @@ class Handler(TimeStampModel):
         nsp = NumericStringParser()
         result = nsp.eval(filled_expr)
 
-        return result > 0
+        return bool(result)

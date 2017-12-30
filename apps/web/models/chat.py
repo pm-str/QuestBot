@@ -1,6 +1,7 @@
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
+from apps.web.validators import json_field_validator
 from .abstract import TimeStampModel
 
 
@@ -56,7 +57,7 @@ class Chat(TimeStampModel):
         max_length=1000,
         null=True,
         blank=True,
-        verbose_name=_('Chat menu'),
+        verbose_name=_('Default chat menu'),
         help_text=_('Chat menu, is used to inherit markup keyboard styles')
     )
     current_keyboard = models.TextField(
@@ -65,6 +66,22 @@ class Chat(TimeStampModel):
         editable=False,
         null=True,
         blank=True,
+    )
+
+    # chat settings
+
+    no_notifications = models.BooleanField(
+        verbose_name=_('Disable notifications')
+    )
+    no_links_preview = models.BooleanField(
+        verbose_name=_('Disable links preview')
+    )
+    template_context = models.TextField(
+        verbose_name=_('Template context'),
+        max_length=3000,
+        null=True,
+        blank=True,
+        validators=[json_field_validator],
     )
 
     class Meta:

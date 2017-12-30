@@ -17,14 +17,6 @@ def plain_to(value, instance=list):
         yield value
 
 
-def jinja2_extensions():
-    extensions = getattr(config, settings.JINJA2_EXTENTIONS, [])
-    try:
-        return ast.literal_eval(extensions)
-    except ValueError:
-        return []
-
-
 def jinja2_template_context():
     extensions = getattr(config, settings.JINJA2_TEMPLATES_CONTEXT, {})
     try:
