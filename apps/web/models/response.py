@@ -11,10 +11,13 @@ from apps.web.models.bot import Bot
 from apps.web.models.chat import Chat
 from apps.web.models.message import Message
 from apps.web.querysets import ResponseQuerySet
-from apps.web.utils import clear_redundant_tags
-from apps.web.validators import jinja2_template_validator
-
 from apps.web.tasks import send_message_task
+from apps.web.utils import clear_redundant_tags
+from apps.web.validators import (
+    array_field_validator,
+    jinja2_template_validator,
+)
+
 from .abstract import TimeStampModel
 
 
@@ -56,7 +59,7 @@ class Response(TimeStampModel):
     keyboard = models.TextField(
         max_length=2000,
         verbose_name=_('Keyboard layout'),
-        validators=[jinja2_template_validator],
+        validators=[array_field_validator],
         null=True,
         blank=True,
     )
@@ -149,4 +152,3 @@ class Response(TimeStampModel):
             ),
             eta=eta,
         )
-

@@ -5,6 +5,7 @@ from django.utils.translation import ugettext_lazy as _
 from telegram import TelegramError
 
 from apps.web.models.user import AppUser
+
 from .abstract import TimeStampModel
 
 NOT_STARTED = 'not_started'

@@ -11,7 +11,6 @@ from constance import config
 from telegram.bot import Bot as TelegramBot
 from telegram.error import InvalidToken, TelegramError
 
-from apps.config import settings
 from apps.web.validators import token_validator
 
 from .abstract import TimeStampModel

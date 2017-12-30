@@ -56,12 +56,12 @@ class NumericStringParser(object):
                 | Optional(oneOf("- +")) + Group(lpar + expr + rpar)
                 ).setParseAction(self.pushUMinus)
         factor = Forward()
-        factor << atom + \
-                  ZeroOrMore((expop + factor).setParseAction(self.pushFirst))
-        term = factor + \
-               ZeroOrMore((multop + factor).setParseAction(self.pushFirst))
-        expr << term + \
-                ZeroOrMore((addop + term).setParseAction(self.pushFirst))
+        factor << (atom +
+                   ZeroOrMore((expop + factor).setParseAction(self.pushFirst)))
+        term = (factor +
+                ZeroOrMore((multop + factor).setParseAction(self.pushFirst)))
+        expr << (term +
+                 ZeroOrMore((addop + term).setParseAction(self.pushFirst)))
         self.bnf = expr
         self.opn = {
             "+": operator.add,

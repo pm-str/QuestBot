@@ -2,9 +2,9 @@ from __future__ import absolute_import, unicode_literals
 
 from celery import shared_task
 
-from apps.web.models.user import AppUser
 from apps.web.models.bot import Bot
 from apps.web.models.update import Update
+from apps.web.models.user import AppUser
 
 
 @shared_task

@@ -2,6 +2,7 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
 from apps.web.validators import json_field_validator
+
 from .abstract import TimeStampModel
 
 

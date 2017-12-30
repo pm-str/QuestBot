@@ -1,11 +1,6 @@
-import ast
-
-from django.conf import settings
 from django.http import HttpResponse
 
 from rest_framework import status
-
-from constance import config
 
 
 def plain_to(value, instance=list):
@@ -15,17 +10,6 @@ def plain_to(value, instance=list):
                 yield item
     else:
         yield value
-
-
-def jinja2_template_context():
-    extensions = getattr(config, settings.JINJA2_TEMPLATES_CONTEXT, {})
-    try:
-        value = ast.literal_eval(extensions)
-        assert isinstance(value, dict)
-    except ValueError:
-        value = {}
-
-    return value
 
 
 def clear_redundant_tags(text: str) -> str:

@@ -3,7 +3,7 @@ from django.apps import AppConfig
 
 def connect_telegram_bot_signals():
     """Inject Telegram bot handlers"""
-    import apps.web.signals.handlers
+    import apps.web.signals.handlers  # noqa
 
 
 class SignalsConfig(AppConfig):

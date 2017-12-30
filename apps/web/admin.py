@@ -3,7 +3,21 @@ from django.db import models
 
 from ckeditor.widgets import CKEditorWidget
 
-from apps.web.models import *
+from apps.web.models import (
+    AppUser,
+    Bot,
+    CallbackQuery,
+    Chat,
+    Condition,
+    Event,
+    Handler,
+    Message,
+    Photo,
+    Quest,
+    Response,
+    Step,
+    Update,
+)
 
 
 class StepInline(admin.TabularInline):
@@ -170,6 +184,7 @@ class StepAdmin(admin.ModelAdmin):
     inlines = (HandlerInline,)
     list_display = ('title', 'number', 'is_initial', )
     list_filter = ('quest', )
+
 
 @admin.register(AppUser)
 class AppUserAdmin(admin.ModelAdmin):

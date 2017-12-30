@@ -1,8 +1,10 @@
+import ast
+import json
 import re
 
+from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext_lazy as _
-from django.conf import settings
 
 from jinja2 import Environment, TemplateSyntaxError
 
@@ -21,21 +23,30 @@ def jinja2_template_validator(value: str):
 def token_validator(value: str):
     if not re.match('[0-9]+:[-_a-zA-Z0-9]+', value):
         raise ValidationError(
-            _("%{value}s is not a valid token"),
+            _("%(value)s is not a valid token"),
             code='invalid',
             params={'value': value},
         )
 
 
 def json_field_validator(value: str):
-    return value
-
-
-def initial_step_validator(value: str):
-    from apps.web.models.step import Step
-    if value and Step.objects.filter(is_initial=True).count():
+    try:
+        json.loads(value)
+    except json.JSONDecodeError:
         raise ValidationError(
-            'Only one field must be unique',
+            _("%(value)s is not a valid JSON object"),
+            code='invalid',
+            params={'value': value},
+        )
+
+
+def array_field_validator(value: str):
+    try:
+        value = ast.literal_eval(value)
+        assert isinstance(value, list)
+    except (ValueError, AssertionError, SyntaxError):
+        raise ValidationError(
+            _('It is not a valid keyboard layout, example: [["one"]]'),
             code='invalid',
         )
 
