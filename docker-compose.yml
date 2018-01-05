@@ -1,0 +1,27 @@
+version: '3'
+
+services:
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+
+  web:
+    build: .
+    volumes:
+      - .:/source
+    ports:
+      - "8000:8000"
+    depends_on:
+      - redis
+    links:
+      - redis
+    command: python3 manage.py runserver 0.0.0.0:8000
+
+  celery:
+    build: .
+    volumes:
+      - .:/source
+    depends_on:
+      - web
+    command: celery -A apps worker -l info

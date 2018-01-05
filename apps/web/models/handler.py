@@ -70,6 +70,7 @@ class Handler(TimeStampModel):
         to='AppUser',
         verbose_name=_('Redirects'),
         help_text=_('Users the message redirect to'),
+        blank=True,
     )
 
     class Meta:

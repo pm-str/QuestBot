@@ -99,7 +99,7 @@ class Bot(TimeStampModel):
 
     def set_webhook(self, url):
         """Set webhook for Telegram bot"""
-        self._bot.set_webhook(webhook_url=url)
+        self._bot.set_webhook(url=url)
 
     @property
     def is_initialized(self) -> bool:

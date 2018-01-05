@@ -34,6 +34,7 @@ class ProcessWebHookAPIView(CreateAPIView):
             update = self.perform_create(serializer)
         else:
             # TODO: implement errors handling
+            print("Error has been occurred. Format is not valid.")
             return Response(status=status.HTTP_204_NO_CONTENT)
 
         headers = self.get_success_headers(serializer.data)

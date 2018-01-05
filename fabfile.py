@@ -1,4 +1,4 @@
-from fabric.api import local
+from fabric.api import local, run
 
 
 def celery():
@@ -8,7 +8,7 @@ def celery():
 
 def runserver():
     """Run django server"""
-    local('./manage.py runserver')
+    local('./manage.py runserver 0.0.0.0:8000')
 
 
 def localtunnel():
@@ -33,3 +33,9 @@ def pep8():
     isort_fix()
     print('Running pep8 checker\n')
     return local('flake8 --config=.flake8')
+
+
+def start_app():
+    """Start server and its dependencies"""
+    celery()
+    runserver()

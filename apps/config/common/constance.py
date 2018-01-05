@@ -5,7 +5,6 @@ These ones can be set up in Django Admin in ``Constance`` section
 """
 from telegram import ParseMode
 
-WEBHOOKS_APIVIEW_URL = 'webhooks_apiview_url'
 WEBHOOKS_NULL_URL = 'webhooks_null_url'
 
 TELEGRAM_DEFAULT_PASS = 'telegram_default_pass'
@@ -19,11 +18,6 @@ CONSTANCE_ADDITIONAL_FIELDS = {
 }
 
 CONSTANCE_CONFIG = {
-    WEBHOOKS_APIVIEW_URL: (
-        'web-api:webhook-processing',
-        'Url for Telegram webhooks',
-        str
-    ),
     WEBHOOKS_NULL_URL: (
         'https://example.com',
         'Telegram webhooks url if bot is disabled or ``WEBHOOKS_URL`` empty',
@@ -40,3 +34,5 @@ CONSTANCE_CONFIG = {
         'parse_mode_select',
     ),
 }
+
+CONSTANCE_REDIS_CONNECTION = 'redis://redis:6379/0'

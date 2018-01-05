@@ -6,6 +6,6 @@ urlpatterns = [
     path(
         'webhook/<hook_id>/',
         ProcessWebHookAPIView.as_view(),
-        name='main-view'
+        name='hooks-handler'
     ),
 ]

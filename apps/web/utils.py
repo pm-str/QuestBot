@@ -1,6 +1,18 @@
+import ast
+
 from django.http import HttpResponse
 
 from rest_framework import status
+
+
+def jinja2_template_context(context):
+    try:
+        value = ast.literal_eval(context)
+        assert isinstance(value, dict)
+    except ValueError:
+        value = {}
+
+    return value
 
 
 def plain_to(value, instance=list):

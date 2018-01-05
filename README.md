@@ -1,5 +1,5 @@
 # QuestBot
-Bot is managed by django and able to provide an interfaice for advanced quests.
+Bot is managed by django and able to provide an interface for advanced quests.
 
 
 # Useful commands

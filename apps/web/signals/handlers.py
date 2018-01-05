@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 
 @receiver(pre_save, sender=Site)
 @receiver(config_updated)
-def dispatcher(sender, instance, *args, **kwargs):
+def dispatcher(sender, *args, **kwargs):
     """Retrieve ``config_updated`` signal from constance
 
     Check if it was url updating, it should be webhook configured again.
@@ -56,7 +56,7 @@ def setup_hooks(sender, instance, *args, **kwargs):
 
     if instance.enabled:
         site_url = Site.objects.get_current().domain
-        api_url = reverse(getattr(config, settings.WEBHOOKS_APIVIEW_URL),
+        api_url = reverse('web-api:hooks-handler',
                           kwargs={'hook_id': instance.hook_id})
         url = 'https://{site_url}/{api_url}/'.format(
             site_url=site_url.strip('/'),
