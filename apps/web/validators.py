@@ -8,7 +8,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from jinja2 import Environment, TemplateSyntaxError
 
-from apps.web.conditions_parsing import NumericStringParser
+from apps.web.custom_eval import eval as custom_eval
 
 
 def jinja2_template_validator(value: str):
@@ -67,10 +67,9 @@ def condition_validator(value: str):
 
     ex = value
 
-    nsp = NumericStringParser()
     result = re.sub('{\d*}', '1', ex)
     try:
-        nsp.eval(result)
+        custom_eval(result)
     except BaseException as ex:
         raise ValidationError(
             _("Expression %(ids_expression)s is invalid"),

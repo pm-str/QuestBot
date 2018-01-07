@@ -3,7 +3,7 @@ import re
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
-from apps.web.conditions_parsing import NumericStringParser
+from apps.web.custom_eval import eval as custom_eval
 from apps.web.models.constants import HookActions
 from apps.web.models.update import Update
 from apps.web.tasks import send_message_task
@@ -41,8 +41,11 @@ class Handler(TimeStampModel):
     ids_expression = models.CharField(
         max_length=500,
         verbose_name='Mathematics expression',
-        help_text=_("A set of math symbols to construct a particular rule,"
-                    "example: {} + {} > 1; example2: {cond_id} == 0"),
+        help_text=_(
+            "A set of math symbols to construct a particular rule,"
+            "example: {} + {} > 1; example2: {cond_id} == 0;"
+            "More details - http://pyparsing.wikispaces.com/file/view/arith.py/241810293/arith.py"
+        ),
         null=True,
         blank=True,
         validators=[condition_validator]
@@ -124,9 +127,9 @@ class Handler(TimeStampModel):
         }
 
         formatted_expr = ''
-        for i in range(len(expr)-1):
+        for i in range(len(expr) - 1):
             formatted_expr += expr[i]
-            if specify_ids and expr[i] == '{' and expr[i+1].isdigit():
+            if specify_ids and expr[i] == '{' and expr[i + 1].isdigit():
                 formatted_expr += '#'
 
         if specify_ids:
@@ -134,7 +137,6 @@ class Handler(TimeStampModel):
         else:
             filled_expr = formatted_expr.format(*list(cond_result.values()))
 
-        nsp = NumericStringParser()
-        result = nsp.eval(filled_expr)
+        result = custom_eval(filled_expr)
 
         return bool(result)
