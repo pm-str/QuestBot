@@ -12,7 +12,7 @@ There are following features:
 1) Install [docker](https://docs.docker.com/engine/installation/) and 
 [docker-compose](https://docs.docker.com/compose/install/)
 2) Clone this repository ```git clone https://github.com/pm-str/QuestBot```
-3) Run ```docker-compose up```
+3) Run ```docker-compose up``` (admin credentials ``rootroot/rootroot``)
 
 After that you should create telegram bot and [obtain api token](https://core.telegram.org/bots#botfather)
 
