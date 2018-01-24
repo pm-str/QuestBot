@@ -88,7 +88,7 @@ class MessageAdmin(admin.ModelAdmin):
 @admin.register(Update)
 class UpdateAdmin(admin.ModelAdmin):
     list_filter = ('bot',)
-    list_display = ('update_id', 'message', 'handler', 'response',)
+    list_display = ('update_id', 'message',)
 
 
 @admin.register(Chat)
