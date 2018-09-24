@@ -16,7 +16,13 @@ services:
       - redis
     links:
       - redis
-    command: python3 manage.py runserver 0.0.0.0:8000
+    command: ["bash", "-c", "
+     python manage.py makemigrations &&
+     python manage.py migrate &&
+     python ./su_setup.py &&
+     python manage.py runserver 0.0.0.0:8000
+     "
+    ]
 
   celery:
     build: .
